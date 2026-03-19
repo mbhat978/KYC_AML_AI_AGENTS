@@ -1,0 +1,35 @@
+# Requirements for Python 3.11 (if you downgrade from 3.12)
+# Use this if you prefer to use Python 3.11 instead
+
+# Core Dependencies
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# LLM & Agent Framework
+langchain==0.1.20
+langchain-openai==0.1.6
+langchain-anthropic==0.1.11
+langchain-core==0.1.52
+openai==1.23.2
+anthropic==0.25.0
+
+# Data Processing
+python-dateutil==2.8.2
+pycountry==23.12.11
+
+# Image Processing
+Pillow==10.1.0
+
+# Utilities
+requests==2.31.0
+jsonschema==4.20.0
+
+# Development & Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.12.1
+flake8==7.0.0
+
+# Logging & Monitoring
+loguru==0.7.2

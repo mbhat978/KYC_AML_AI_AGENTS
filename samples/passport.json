@@ -1,0 +1,21 @@
+{
+  "document_type": "PASSPORT",
+  "image_path": "samples/images/passport_sample.jpg",
+  "ocr_text": "PASSPORT\nUnited Kingdom of Great Britain and Northern Ireland\nSurname: MILLER\nGiven Names: JONATHAN DAVID\nNationality: BRITISH\nDate of Birth: 30 NOV 1988\nSex: M\nPassport No.: K1234567\nDate of Issue: 15 JAN 2020\nDate of Expiry: 15 JAN 2030",
+  "extracted_fields": {
+    "name": "Jonathan David Miller",
+    "date_of_birth": "1988-11-30",
+    "id_number": "K1234567",
+    "document_type": "PASSPORT",
+    "nationality": "British",
+    "sex": "M",
+    "issue_date": "2020-01-15",
+    "expiry_date": "2025-01-15",
+    "address": "789 Baker Street, London, UK SW1A 1AA"
+  },
+  "metadata": {
+    "upload_timestamp": "2026-03-18T11:15:00Z",
+    "file_size_kb": 312,
+    "confidence_score": 0.92
+  }
+}

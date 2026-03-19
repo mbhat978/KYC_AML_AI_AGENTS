@@ -1,0 +1,20 @@
+{
+  "document_type": "DRIVERS_LICENSE",
+  "image_path": "samples/images/dl_sample.jpg",
+  "ocr_text": "CALIFORNIA DRIVER LICENSE\nDL NUMBER: DL1234567890\nNAME: JOHNSON, SARAH\nDOB: 08/10/1992\nADDRESS: 321 OAK AVENUE\nSAN FRANCISCO CA 94102\nISS: 01/15/2022\nEXP: 08/10/2027\nCLASS: C",
+  "extracted_fields": {
+    "name": "Sarah Johnson",
+    "date_of_birth": "1992-08-10",
+    "id_number": "DL1234567890",
+    "document_type": "DRIVERS_LICENSE",
+    "address": "321 Oak Avenue, San Francisco, CA 94102",
+    "issue_date": "2022-01-15",
+    "expiry_date": "2027-08-10",
+    "license_class": "C"
+  },
+  "metadata": {
+    "upload_timestamp": "2026-03-18T12:45:00Z",
+    "file_size_kb": 198,
+    "confidence_score": 0.89
+  }
+}

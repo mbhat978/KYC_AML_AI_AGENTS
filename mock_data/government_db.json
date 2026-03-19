@@ -1,0 +1,51 @@
+{
+  "database_name": "Government ID Database (Mock)",
+  "last_updated": "2026-03-18",
+  "records": [
+    {
+      "id_number": "ABCDE1234F",
+      "id_type": "PAN",
+      "name": "Rajesh Kumar Sharma",
+      "date_of_birth": "1985-06-15",
+      "address": "123 MG Road, Bangalore, Karnataka 560001",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "PQRST5678G",
+      "id_type": "PAN",
+      "name": "Priya Patel",
+      "date_of_birth": "1990-03-22",
+      "address": "456 Park Street, Mumbai, Maharashtra 400001",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "K1234567",
+      "id_type": "PASSPORT",
+      "name": "Jonathan David Miller",
+      "date_of_birth": "1988-11-30",
+      "address": "789 Baker Street, London, UK SW1A 1AA",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "DL1234567890",
+      "id_type": "DRIVERS_LICENSE",
+      "name": "Sarah Johnson",
+      "date_of_birth": "1992-08-10",
+      "address": "321 Oak Avenue, San Francisco, CA 94102",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "XYZAB9876C",
+      "id_type": "PAN",
+      "name": "Amit Verma",
+      "date_of_birth": "1987-12-05",
+      "address": "789 Residency Rd, Bangalore, Karnataka 560025",
+      "status": "active",
+      "verified": true
+    }
+  ]
+}

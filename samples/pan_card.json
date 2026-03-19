@@ -1,0 +1,18 @@
+{
+  "document_type": "PAN",
+  "image_path": "samples/images/pan_card_sample.jpg",
+  "ocr_text": "INCOME TAX DEPARTMENT\nGOVT. OF INDIA\nPermanent Account Number Card\nName: RAJESH KUMAR SHARMA\nFather's Name: MOHAN LAL SHARMA\nDate of Birth: 15/06/1985\nPAN: ABCDE1234F",
+  "extracted_fields": {
+    "name": "Rajesh Kumar Sharma",
+    "father_name": "Mohan Lal Sharma",
+    "date_of_birth": "1985-06-15",
+    "id_number": "ABCDE1234F",
+    "document_type": "PAN",
+    "address": "123 MG Road, Bangalore, Karnataka 560001"
+  },
+  "metadata": {
+    "upload_timestamp": "2026-03-18T10:30:00Z",
+    "file_size_kb": 245,
+    "confidence_score": 0.95
+  }
+}

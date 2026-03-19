@@ -1,0 +1,18 @@
+# Minimal Requirements - For Testing Without LLM Dependencies
+# Use this if you encounter dependency conflicts with the full requirements.txt
+
+# Core Dependencies (Required)
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+loguru==0.7.2
+
+# Utilities (Required)
+requests==2.31.0
+jsonschema==4.20.0
+python-dateutil==2.8.2
+
+# Optional - Only if you need LLM features
+# Uncomment the line below if you want to use LLMs:
+# openai>=1.0.0
+# anthropic>=0.20.0

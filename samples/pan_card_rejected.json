@@ -1,0 +1,18 @@
+{
+  "document_type": "PAN",
+  "image_path": "samples/images/pan_card_rejected.jpg",
+  "ocr_text": "INCOME TAX DEPARTMENT\nGOVT. OF INDIA\nPermanent Account Number Card\nName: AHMED HASSAN\nFather's Name: ABDUL HASSAN\nDate of Birth: 30/01/1970\nPAN: AHXYZ9876K",
+  "extracted_fields": {
+    "name": "Ahmed Hassan",
+    "father_name": "Abdul Hassan",
+    "date_of_birth": "1970-01-30",
+    "id_number": "AHXYZ9876K",
+    "document_type": "PAN",
+    "address": "456 Nehru Place, New Delhi, Delhi 110019"
+  },
+  "metadata": {
+    "upload_timestamp": "2026-03-19T01:24:00Z",
+    "file_size_kb": 238,
+    "confidence_score": 0.92
+  }
+}

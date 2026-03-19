@@ -1,0 +1,37 @@
+{
+  "list_name": "International Sanctions List (Mock)",
+  "last_updated": "2026-03-18",
+  "source": "OFAC/UN/EU Consolidated",
+  "entries": [
+    {
+      "name": "Victor Petrov",
+      "aliases": ["Viktor Petrov", "V. Petrov"],
+      "date_of_birth": "1965-04-12",
+      "nationality": "RU",
+      "id_numbers": ["XX1234567"],
+      "reason": "Financial crimes",
+      "listed_date": "2022-03-15",
+      "severity": "HIGH"
+    },
+    {
+      "name": "Maria Santos",
+      "aliases": ["M. Santos"],
+      "date_of_birth": "1978-09-23",
+      "nationality": "VE",
+      "id_numbers": [],
+      "reason": "Money laundering",
+      "listed_date": "2021-11-08",
+      "severity": "HIGH"
+    },
+    {
+      "name": "Ahmed Hassan",
+      "aliases": ["A. Hassan", "Ahmed H."],
+      "date_of_birth": "1970-01-30",
+      "nationality": "SY",
+      "id_numbers": ["YY9876543"],
+      "reason": "Terrorism financing",
+      "listed_date": "2020-06-22",
+      "severity": "CRITICAL"
+    }
+  ]
+}

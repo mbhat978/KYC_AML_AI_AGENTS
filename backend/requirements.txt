@@ -1,0 +1,24 @@
+# FastAPI Backend Requirements
+
+# Core FastAPI
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# CORS & Middleware
+python-dotenv==1.0.0
+
+# Async & Streaming
+aiofiles==23.2.1
+sse-starlette==1.8.2
+
+# Data Validation
+pydantic==2.8.0
+pydantic-settings==2.3.0
+
+# Utilities
+python-dateutil==2.9.0
+loguru==0.7.2
+
+# Note: Core KYC dependencies are in root requirements.txt
+# The backend will import from parent directories

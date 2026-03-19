@@ -1,0 +1,43 @@
+{
+  "list_name": "Politically Exposed Persons (Mock)",
+  "last_updated": "2026-03-18",
+  "source": "World-Check/Dow Jones",
+  "entries": [
+    {
+      "name": "Robert Williams",
+      "position": "Former Minister of Finance",
+      "country": "UK",
+      "date_of_birth": "1955-07-20",
+      "status": "Former PEP",
+      "risk_level": "MEDIUM",
+      "last_position_held": "2018-12-31"
+    },
+    {
+      "name": "Elena Rodriguez",
+      "position": "Senator",
+      "country": "MX",
+      "date_of_birth": "1968-03-14",
+      "status": "Active PEP",
+      "risk_level": "HIGH",
+      "current_position": true
+    },
+    {
+      "name": "Dr. Rajesh Mehta",
+      "position": "Director of State Bank",
+      "country": "IN",
+      "date_of_birth": "1962-11-05",
+      "status": "Active PEP",
+      "risk_level": "MEDIUM",
+      "current_position": true
+    },
+    {
+      "name": "Liu Wei",
+      "position": "Provincial Governor",
+      "country": "CN",
+      "date_of_birth": "1960-05-18",
+      "status": "Active PEP",
+      "risk_level": "HIGH",
+      "current_position": true
+    }
+  ]
+}
