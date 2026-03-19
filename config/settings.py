@@ -31,7 +31,7 @@ class Settings(BaseSettings):
     # Decision Thresholds (1-10 scale to match AssessmentAgent risk_score)
     # Risk score ranges: 1-2.5=LOW, 2.5-5.0=MEDIUM, 5.0-7.5=HIGH, 7.5-10.0=CRITICAL
     auto_approve_threshold: float = 2.5  # Approve if risk_score <= 2.5 (LOW)
-    auto_reject_threshold: float = 8.0   # Reject if risk_score >= 8.0 (CRITICAL)
+    auto_reject_threshold: float = 7.5   # Reject if risk_score >= 7.5 (HIGH/CRITICAL)
     confidence_threshold: float = 0.85    # Confidence threshold (still 0.0-1.0 scale)
     
     # Mock Database Configuration

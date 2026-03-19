@@ -35,8 +35,8 @@ class AssessmentAgent:
         except Exception as e:
             logger.error(f"Assessment failed: {str(e)}")
             return {
-                "risk_score": 1.0,
-                "risk_category": "HIGH",
+                "risk_score": 10.0,
+                "risk_category": "CRITICAL",
                 "risk_factors": [f"Assessment error: {str(e)}"],
                 "agent": "AssessmentAgent",
                 "status": "error"

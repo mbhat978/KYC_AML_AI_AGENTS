@@ -2,8 +2,10 @@
 Extraction Agent - Intelligent Document Understanding
 Extracts structured identity data from documents (PAN, Passport, DL)
 """
-from typing import Dict, Any
+from typing import Dict, Any, List
 import json
+import re
+from pydantic import BaseModel, Field
 from loguru import logger
 from utils.llm_client import get_llm_client
 from utils.validators import validate_extracted_data
@@ -48,6 +50,24 @@ Return your analysis as valid JSON with this structure:
     def __init__(self):
         self.llm_client = get_llm_client()
         logger.info("Extraction Agent initialized")
+    
+    def _clean_json_response(self, response: str) -> str:
+        """
+        Clean LLM response to extract valid JSON, handling markdown code blocks
+        This prevents the 'Markdown JSON Trap' where LLMs wrap output in ```json blocks
+        """
+        # Remove markdown code blocks if present
+        response = response.strip()
+        
+        # Check if wrapped in markdown
+        if response.startswith('```'):
+            # Extract content between ```json and ``` or just ``` and ```
+            pattern = r'```(?:json)?\s*\n(.*?)\n```'
+            match = re.search(pattern, response, re.DOTALL)
+            if match:
+                response = match.group(1).strip()
+        
+        return response
     
     def extract(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -99,13 +119,21 @@ Extract all identity fields and return as JSON."""
                     user_message=user_message
                 )
                 
-                # Parse LLM response
-                result = json.loads(response)
-                result['agent'] = 'ExtractionAgent'
-                result['status'] = 'success'
+                # Clean response to handle markdown code blocks
+                cleaned_response = self._clean_json_response(response)
                 
-                logger.info(f"LLM extraction completed with confidence: {result.get('confidence', 0.0)}")
-                return result
+                # Parse LLM response
+                try:
+                    result = json.loads(cleaned_response)
+                    result['agent'] = 'ExtractionAgent'
+                    result['status'] = 'success'
+                    logger.info(f"LLM extraction completed with confidence: {result.get('confidence', 0.0)}")
+                    logger.debug("Successfully handled potential markdown JSON wrapping")
+                    return result
+                except json.JSONDecodeError as e:
+                    logger.error(f"JSON parsing failed even after cleaning: {str(e)}")
+                    logger.debug(f"Cleaned response: {cleaned_response[:200]}")
+                    raise
             
             else:
                 error_msg = "Document has no extracted_fields or ocr_text"

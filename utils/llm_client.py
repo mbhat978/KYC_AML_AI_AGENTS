@@ -1,10 +1,11 @@
 """
 LLM Client wrapper for multi-provider support
 """
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Type
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
-from langchain.schema import HumanMessage, SystemMessage, AIMessage
+from pydantic import BaseModel
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
 from config.settings import settings
 from loguru import logger
 
@@ -66,6 +67,43 @@ class LLMClient:
             
         except Exception as e:
             logger.error(f"LLM generation failed: {str(e)}")
+            raise
+    
+    def generate_structured(
+        self,
+        system_prompt: str,
+        user_message: str,
+        schema: Type[BaseModel],
+        context: Optional[Dict[str, Any]] = None
+    ) -> BaseModel:
+        """
+        Generate a structured response using LangChain's with_structured_output
+        
+        This prevents JSON hallucinations and markdown wrapping by mathematically
+        forcing the LLM to return a clean object matching the Pydantic schema.
+        
+        Args:
+            system_prompt: The system instruction
+            user_message: The user's input
+            schema: Pydantic model class defining the expected output structure
+            context: Additional context to include
+            
+        Returns:
+            Pydantic model instance with structured data
+        """
+        try:
+            # Create a structured output chain
+            structured_llm = self._client.with_structured_output(schema)
+            
+            # Build the full prompt
+            full_prompt = f"{system_prompt}\n\n{user_message}"
+            if context:
+                full_prompt += f"\n\nContext: {context}"
+            
+            response = structured_llm.invoke(full_prompt)
+            return response
+        except Exception as e:
+            logger.error(f"Structured LLM generation failed: {str(e)}")
             raise
     
     async def agenerate(
