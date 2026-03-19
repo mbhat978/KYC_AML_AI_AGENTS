@@ -18,7 +18,7 @@ class DecisionAgent:
         logger.info("Making final decision")
         
         try:
-            risk_score = assessment_result.get('risk_score', 0.5)
+            risk_score = assessment_result.get('risk_score', 5.0)  # Default to MEDIUM on 1-10 scale
             risk_category = assessment_result.get('risk_category', 'MEDIUM')
             reasoning_conclusion = reasoning_result.get('reasoning_conclusion', 'ESCALATE')
             confidence = reasoning_result.get('confidence', 0.5)
@@ -59,7 +59,7 @@ class DecisionAgent:
                 "status": "success"
             }
             
-            logger.info(f"Decision made: {decision}")
+            logger.info(f"Decision made: {decision} (risk_score: {risk_score:.2f}, category: {risk_category})")
             return result
             
         except Exception as e:
@@ -67,7 +67,7 @@ class DecisionAgent:
             return {
                 "decision": "ESCALATE",
                 "recommendation": "System error - manual review required",
-                "risk_score": 1.0,
+                "risk_score": 5.0,  # Default to MEDIUM on 1-10 scale
                 "risk_category": "HIGH",
                 "confidence": 0.0,
                 "explanation": f"Decision error: {str(e)}",
@@ -78,23 +78,38 @@ class DecisionAgent:
     
     def _make_decision(self, risk_score: float, risk_category: str, 
                        reasoning_conclusion: str, confidence: float) -> tuple:
-        """Determine final decision"""
+        """
+        Determine final decision using 1-10 risk score scale
         
-        # Auto-reject for sanctions
-        if reasoning_conclusion == "REJECT":
-            return "REJECT", "Application rejected due to sanctions/critical issues"
+        Risk Score Scale (1-10):
+        - 1.0-2.5: LOW
+        - 2.5-5.0: MEDIUM  
+        - 5.0-7.5: HIGH
+        - 7.5-10.0: CRITICAL
         
-        # Auto-approve for low risk + high confidence
-        if (risk_score < settings.auto_approve_threshold and 
-            confidence > settings.auto_approve_threshold and
+        Confidence Scale (0.0-1.0): unchanged
+        
+        Decision Priority:
+        1. Auto-approve LOW risk first (prevents false rejections)
+        2. Auto-reject CRITICAL risk or sanctions
+        3. Escalate everything else
+        """
+        
+        # PRIORITY 1: Auto-approve for LOW risk + high confidence
+        # Check this FIRST to prevent LOW risk documents from being incorrectly rejected
+        # risk_score <= 2.5 (LOW range) AND confidence > 0.85 AND category is LOW
+        if (risk_score <= settings.auto_approve_threshold and 
+            confidence > settings.confidence_threshold and
             risk_category == "LOW"):
             return "APPROVE", "Application approved - low risk profile"
         
-        # Auto-reject for very high risk
-        if risk_score > (1 - settings.auto_reject_threshold):
-            return "REJECT", "Application rejected - high risk profile"
+        # PRIORITY 2: Auto-reject for sanctions/critical issues or CRITICAL risk scores
+        # Only reject for actual critical issues or very high risk scores
+        if reasoning_conclusion == "REJECT" or risk_score >= settings.auto_reject_threshold:
+            reason = "Application rejected due to sanctions/critical issues" if reasoning_conclusion == "REJECT" else f"Application rejected - critical risk profile (score: {risk_score:.2f}/10)"
+            return "REJECT", reason
         
-        # Otherwise escalate
+        # PRIORITY 3: Otherwise escalate for manual review
         return "ESCALATE", f"Manual review required - {risk_category} risk"
     
     def _generate_audit_trail(self, decision: str, assessment: Dict, reasoning: Dict) -> Dict:
@@ -121,7 +136,7 @@ class DecisionAgent:
         """Generate human-readable explanation"""
         explanation = f"DECISION: {decision}\n\n"
         explanation += f"Risk Level: {risk_category}\n"
-        explanation += f"Risk Score: {assessment.get('risk_score', 0):.2f}\n\n"
+        explanation += f"Risk Score: {assessment.get('risk_score', 0):.2f} (scale: 1-10)\n\n"
         
         explanation += "Key Factors:\n"
         for factor in assessment.get('risk_factors', []):

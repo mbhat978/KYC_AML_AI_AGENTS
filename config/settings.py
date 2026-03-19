@@ -19,15 +19,20 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     environment: str = "development"
     
-    # Risk Thresholds
+    # Risk Thresholds (DEPRECATED - for reference only)
+    # These were on 0.0-1.0 scale, now using 1-10 scale below
     low_risk_threshold: float = 0.3
     medium_risk_threshold: float = 0.6
     high_risk_threshold: float = 0.8
     
     # Agent Configuration
     max_reasoning_loops: int = 3
-    auto_approve_threshold: float = 0.9
-    auto_reject_threshold: float = 0.2
+    
+    # Decision Thresholds (1-10 scale to match AssessmentAgent risk_score)
+    # Risk score ranges: 1-2.5=LOW, 2.5-5.0=MEDIUM, 5.0-7.5=HIGH, 7.5-10.0=CRITICAL
+    auto_approve_threshold: float = 2.5  # Approve if risk_score <= 2.5 (LOW)
+    auto_reject_threshold: float = 8.0   # Reject if risk_score >= 8.0 (CRITICAL)
+    confidence_threshold: float = 0.85    # Confidence threshold (still 0.0-1.0 scale)
     
     # Mock Database Configuration
     use_mock_databases: bool = True
