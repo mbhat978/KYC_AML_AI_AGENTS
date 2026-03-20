@@ -21,8 +21,15 @@ function App() {
       setFinalDecision(null);
       setSessionId('');
 
-      // Send document to backend
-      const response = await api.processDocument(documentData);
+      // Check if documentData is a File object or JSON data
+      let response;
+      if (documentData instanceof File) {
+        // Upload file (PDF, JPG, PNG)
+        response = await api.uploadFile(documentData);
+      } else {
+        // Process JSON document data
+        response = await api.processDocument(documentData);
+      }
       setSessionId(response.session_id);
 
       // Connect to SSE stream

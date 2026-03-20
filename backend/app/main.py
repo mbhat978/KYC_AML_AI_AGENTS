@@ -11,6 +11,7 @@ import sys
 sys.path.append('..')
 
 from backend.app.api import routes
+from backend.app.api import upload_routes
 from backend.app.middleware.cors import get_cors_config
 
 # Initialize FastAPI app
@@ -34,6 +35,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(routes.router, prefix="/api")
+app.include_router(upload_routes.router, prefix="/api")
 
 # Configure logging
 logger.remove()

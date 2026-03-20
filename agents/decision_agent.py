@@ -94,7 +94,7 @@ class DecisionAgent:
         2. Auto-reject CRITICAL risk or sanctions
         3. Escalate everything else
         """
-        print(f"DEBUG: Score: {settings.auto_approve_threshold}, Conf: {confidence}, Cat: {risk_category}, Reason: {reasoning_conclusion}")
+        #print(f"DEBUG: Score: {settings.auto_approve_threshold}, Conf: {confidence}, Cat: {risk_category}, Reason: {reasoning_conclusion}")
         # PRIORITY 1: Auto-approve for LOW risk + high confidence
         # Check this FIRST to prevent LOW risk documents from being incorrectly rejected
         # risk_score <= 2.5 (LOW range) AND confidence > 0.85 AND category is LOW

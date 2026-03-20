@@ -48,17 +48,33 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
 
   const processFile = (file: File) => {
     setFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const json = JSON.parse(e.target?.result as string);
-        onFileUpload(json);
-      } catch (error) {
-        alert('Invalid JSON file. Please upload a valid KYC document.');
-        setFileName(null);
-      }
-    };
-    reader.readAsText(file);
+    
+    // Check if it's a JSON file
+    if (file.name.endsWith('.json') || file.type === 'application/json') {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target?.result as string);
+          onFileUpload(json);
+        } catch (error) {
+          alert('Invalid JSON file. Please upload a valid KYC document.');
+          setFileName(null);
+        }
+      };
+      reader.readAsText(file);
+    } else if (
+      file.type === 'application/pdf' || 
+      file.type === 'image/jpeg' || 
+      file.type === 'image/jpg' || 
+      file.type === 'image/png'
+    ) {
+      // For PDF and images, pass the file directly
+      // The backend will handle conversion and extraction
+      onFileUpload(file);
+    } else {
+      alert('Unsupported file type. Please upload PDF, JPG, PNG, or JSON files.');
+      setFileName(null);
+    }
   };
 
   const loadSampleDocument = (sampleType: string) => {
@@ -91,7 +107,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
           type="file"
           id="file-upload"
           className="hidden"
-          accept=".json"
+          accept="application/pdf,image/jpeg,image/jpg,image/png,.json"
           onChange={handleFileInput}
           disabled={isProcessing}
         />
@@ -122,7 +138,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
             <p className="text-gray-500 text-sm mt-1">or drag and drop</p>
           </div>
           
-          <p className="text-xs text-gray-500 mt-2">JSON files only</p>
+          <p className="text-xs text-gray-500 mt-2">Supports PDF, JPG, PNG, and JSON formats</p>
           
           {fileName && (
             <div className="mt-4 p-3 bg-green-50 rounded-md">

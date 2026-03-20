@@ -14,11 +14,14 @@ sse-starlette==1.8.2
 
 # Data Validation
 pydantic==2.8.0
-pydantic-settings==2.3.0
+pydantic-settings<3.0.0,>=2.10.1
 
 # Utilities
 python-dateutil==2.9.0
 loguru==0.7.2
+
+# PDF Processing - NEW for Phase 1
+PyMuPDF==1.23.8
 
 # Note: Core KYC dependencies are in root requirements.txt
 # The backend will import from parent directories
