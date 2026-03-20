@@ -21,9 +21,9 @@ class Settings(BaseSettings):
     
     # Risk Thresholds (DEPRECATED - for reference only)
     # These were on 0.0-1.0 scale, now using 1-10 scale below
-    low_risk_threshold: float = 0.3
-    medium_risk_threshold: float = 0.6
-    high_risk_threshold: float = 0.8
+    low_risk_threshold: float = 3.0
+    medium_risk_threshold: float = 6.0
+    high_risk_threshold: float = 8.0
     
     # Agent Configuration
     max_reasoning_loops: int = 3

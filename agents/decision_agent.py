@@ -20,7 +20,7 @@ class DecisionAgent:
         try:
             risk_score = assessment_result.get('risk_score', 5.0)  # Default to MEDIUM on 1-10 scale
             risk_category = assessment_result.get('risk_category', 'MEDIUM')
-            reasoning_conclusion = reasoning_result.get('reasoning_conclusion', 'ESCALATE')
+            reasoning_conclusion = reasoning_result.get('reasoning_conclusion', 'ESCALATE').upper()
             confidence = reasoning_result.get('confidence', 0.5)
             
             # Make decision based on rules and thresholds
@@ -94,11 +94,11 @@ class DecisionAgent:
         2. Auto-reject CRITICAL risk or sanctions
         3. Escalate everything else
         """
-        
+        print(f"DEBUG: Score: {settings.auto_approve_threshold}, Conf: {confidence}, Cat: {risk_category}, Reason: {reasoning_conclusion}")
         # PRIORITY 1: Auto-approve for LOW risk + high confidence
         # Check this FIRST to prevent LOW risk documents from being incorrectly rejected
         # risk_score <= 2.5 (LOW range) AND confidence > 0.85 AND category is LOW
-        if (risk_score <= settings.auto_approve_threshold and 
+        if (risk_score < settings.auto_approve_threshold and 
             confidence > settings.confidence_threshold and
             risk_category == "LOW"):
             return "APPROVE", "Application approved - low risk profile"

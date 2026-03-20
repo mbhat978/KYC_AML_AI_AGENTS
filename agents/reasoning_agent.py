@@ -30,7 +30,7 @@ class ReasoningAgent:
         
         try:
             extracted_data = extraction_result.get('extracted_data', {})
-            verification_status = verification_result.get('verification_status')
+            verification_status = verification_result.get('verification_status').upper()
             discrepancies = verification_result.get('discrepancies', [])
             matches = verification_result.get('matches', {})
             
@@ -119,7 +119,7 @@ class ReasoningAgent:
         """Generate human-readable analysis"""
         name = extracted_data.get('name', 'Unknown')
         id_num = extracted_data.get('id_number', 'Unknown')
-        verification_status = verification_result.get('verification_status')
+        verification_status = verification_result.get('verification_status').upper()
         
         analysis = f"Analysis for {name} (ID: {id_num}):\n"
         analysis += f"- Verification Status: {verification_status}\n"

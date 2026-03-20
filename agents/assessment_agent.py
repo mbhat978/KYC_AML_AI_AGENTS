@@ -54,7 +54,7 @@ class AssessmentAgent:
             score += 3.0
         
         # Verification status
-        ver_status = verification.get('verification_status')
+        ver_status = verification.get('verification_status').upper()
         if ver_status == 'VERIFIED':
             score -= 3.0
         elif ver_status == 'PARTIAL':
