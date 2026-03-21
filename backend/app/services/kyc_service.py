@@ -68,6 +68,9 @@ class KYCServiceWithStreaming:
             result = await asyncio.to_thread(self.orchestrator.process_document, document)
             logger.info(f"Orchestrator result: {result.get('decision')} - Risk: {result.get('risk_score')}")
             
+            # Add session_id to the result for frontend tracking
+            result['session_id'] = session_id
+            
             # Send another heartbeat after processing
             yield self._format_sse_event({"session_id": session_id, "agent": "System", "step": "heartbeat", "status": "processing", "message": "✅ AI processing complete, compiling results...", "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.2)

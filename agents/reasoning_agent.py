@@ -45,9 +45,15 @@ class ReasoningAgent:
                 conclusion = "REJECT"
                 confidence = 0.1
             elif matches.get('pep', {}).get('status') == 'flagged':
-                risk_factors.append("HIGH RISK: PEP match detected")
-                conclusion = "ESCALATE"
-                confidence = 0.4
+                pep_risk_level = matches.get('pep', {}).get('risk_level', 'MEDIUM')
+                if pep_risk_level == 'HIGH':
+                    risk_factors.append("HIGH RISK: Active high-risk PEP match detected")
+                    conclusion = "ESCALATE"
+                    confidence = 0.5
+                else:
+                    risk_factors.append("MEDIUM RISK: PEP match detected")
+                    conclusion = "ESCALATE"
+                    confidence = 0.6  # Higher confidence for former/medium PEP
             # Handle name mismatches intelligently
             elif verification_status == "PARTIAL":
                 gov_match = matches.get('government_db', {})

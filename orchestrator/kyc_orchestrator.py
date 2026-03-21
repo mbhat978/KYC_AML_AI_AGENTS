@@ -70,6 +70,14 @@ class KYCOrchestrator:
             logger.info(f"Final Decision: {decision_result['decision']}")
             
             # Compile final response
+            # Include extraction confidence in extracted_data for UI display
+            # Remove any existing 'confidence' field to avoid duplication
+            extracted_data_clean = {k: v for k, v in extracted_data.items() if k != 'confidence'}
+            extracted_data_with_confidence = {
+                **extracted_data_clean,
+                "extraction_confidence": extraction_result.get('confidence', 0.85)
+            }
+            
             final_response = {
                 "decision": decision_result['decision'],
                 "risk_score": decision_result['risk_score'],
@@ -79,7 +87,7 @@ class KYCOrchestrator:
                 "recommendation": decision_result['recommendation'],
                 "audit_trail": decision_result['audit_trail'],
                 "workflow_log": workflow_log,
-                "extracted_data": extracted_data,
+                "extracted_data": extracted_data_with_confidence,
                 "timestamp": decision_result['timestamp']
             }
             

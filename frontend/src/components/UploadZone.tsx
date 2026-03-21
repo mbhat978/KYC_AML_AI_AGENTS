@@ -77,19 +77,6 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
     }
   };
 
-  const loadSampleDocument = (sampleType: string) => {
-    fetch(`/samples/${sampleType}.json`)
-      .then(res => res.json())
-      .then(data => {
-        setFileName(`${sampleType}.json`);
-        onFileUpload(data);
-      })
-      .catch(err => {
-        console.error('Error loading sample:', err);
-        alert('Could not load sample document');
-      });
-  };
-
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div
@@ -150,34 +137,28 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
         </div>
       </div>
 
-      {/* Sample Documents */}
-      <div className="mt-6">
-        <p className="text-sm text-gray-600 mb-3 text-center">
-          Or try a sample document:
-        </p>
-        <div className="flex gap-3 justify-center flex-wrap">
-          <button
-            onClick={() => loadSampleDocument('pan_card')}
-            disabled={isProcessing}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            🪪 PAN Card
-          </button>
-          <button
-            onClick={() => loadSampleDocument('passport')}
-            disabled={isProcessing}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            🛂 Passport
-          </button>
-          <button
-            onClick={() => loadSampleDocument('drivers_license')}
-            disabled={isProcessing}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            🚗 Driver's License
-          </button>
+      {/* Acceptable Document Types */}
+      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+        <h3 className="text-sm font-semibold text-blue-900 mb-2 text-center">
+          Acceptable KYC Documents
+        </h3>
+        <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex items-center gap-2 text-sm text-blue-800">
+            <span className="text-lg">🪪</span>
+            <span>PAN Card</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-blue-800">
+            <span className="text-lg">🛂</span>
+            <span>Passport</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-blue-800">
+            <span className="text-lg">🚗</span>
+            <span>Driving License</span>
+          </div>
         </div>
+        <p className="text-xs text-blue-700 mt-3 text-center">
+          Please ensure your document is clear and all details are visible
+        </p>
       </div>
     </div>
   );

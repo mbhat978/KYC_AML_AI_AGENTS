@@ -134,21 +134,25 @@ class DecisionAgent:
     def _generate_explanation(self, decision: str, risk_category: str,
                              reasoning_conclusion: str, assessment: Dict) -> str:
         """Generate human-readable explanation"""
-        explanation = f"DECISION: {decision}\n\n"
-        explanation += f"Risk Level: {risk_category}\n"
-        explanation += f"Risk Score: {assessment.get('risk_score', 0):.2f} (scale: 1-10)\n\n"
+        explanation = f"**DECISION:** {decision}\n\n"
+        explanation += f"**Risk Assessment:**\n"
+        explanation += f"• Risk Level: {risk_category}\n"
+        explanation += f"• Risk Score: {assessment.get('risk_score', 0):.2f}/10\n\n"
         
-        explanation += "Key Factors:\n"
-        for factor in assessment.get('risk_factors', []):
-            explanation += f"- {factor}\n"
+        risk_factors = assessment.get('risk_factors', [])
+        if risk_factors:
+            explanation += "**Key Risk Factors:**\n"
+            for factor in risk_factors:
+                explanation += f"• {factor}\n"
+            explanation += "\n"
         
-        explanation += f"\nRecommendation: {reasoning_conclusion}\n"
+        explanation += f"**Recommendation:** {reasoning_conclusion}\n\n"
         
         if decision == "APPROVE":
-            explanation += "\nThis application has been automatically approved."
+            explanation += "**Action:** This application has been automatically approved based on low risk indicators."
         elif decision == "REJECT":
-            explanation += "\nThis application has been rejected."
+            explanation += "**Action:** This application has been rejected due to critical risk factors or sanctions matches."
         else:
-            explanation += "\nThis application requires manual review by a compliance officer."
+            explanation += "**Action:** This application requires manual review by a compliance officer before a final decision can be made."
         
         return explanation

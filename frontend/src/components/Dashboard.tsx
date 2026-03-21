@@ -98,9 +98,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision }) => {
               <span>💬</span>
               Explanation
             </h4>
-            <p className="text-gray-700 text-sm leading-relaxed bg-white p-4 rounded border border-gray-200">
+            <div className="text-gray-700 text-sm leading-relaxed bg-white p-4 rounded border border-gray-200 whitespace-pre-wrap">
               {decision.explanation}
-            </p>
+            </div>
           </div>
 
           {/* Recommendation */}
@@ -123,16 +123,28 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision }) => {
               </h4>
               <div className="bg-white p-4 rounded border border-gray-200">
                 <dl className="grid grid-cols-2 gap-3 text-sm">
-                  {Object.entries(decision.extracted_data).map(([key, value]) => (
-                    <div key={key}>
-                      <dt className="text-gray-500 font-medium capitalize">
-                        {key.replace(/_/g, ' ')}:
-                      </dt>
-                      <dd className="text-gray-900 mt-1">
-                        {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-                      </dd>
-                    </div>
-                  ))}
+                  {Object.entries(decision.extracted_data).map(([key, value]) => {
+                    // Format confidence values as percentages
+                    let displayValue: string;
+                    if (key.toLowerCase().includes('confidence') && typeof value === 'number' && value <= 1) {
+                      displayValue = `${(value * 100).toFixed(0)}%`;
+                    } else if (typeof value === 'object' && value !== null) {
+                      displayValue = JSON.stringify(value);
+                    } else {
+                      displayValue = String(value ?? '');
+                    }
+                    
+                    return (
+                      <div key={key}>
+                        <dt className="text-gray-500 font-medium capitalize">
+                          {key.replace(/_/g, ' ')}:
+                        </dt>
+                        <dd className="text-gray-900 mt-1">
+                          {displayValue}
+                        </dd>
+                      </div>
+                    );
+                  })}
                 </dl>
               </div>
             </div>
