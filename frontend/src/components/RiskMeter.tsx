@@ -76,14 +76,22 @@ export const RiskMeter: React.FC<RiskMeterProps> = ({ score, category }) => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <span className="text-2xl">📊</span>
           Risk Assessment
         </h2>
       </div>
 
-      <div className={`rounded-lg p-6 ${colors.bg} border-2 ${colors.border}`}>
+      <div className={`modern-card glass-effect rounded-xl p-6 ${colors.bg} border-3 ${colors.border} shadow-lg hover:shadow-2xl transition-all duration-300`}
+        style={{
+          boxShadow: category === 'LOW' ? '0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.1)' :
+                     category === 'MEDIUM' ? '0 0 20px rgba(234, 179, 8, 0.3), 0 0 40px rgba(234, 179, 8, 0.1)' :
+                     category === 'HIGH' ? '0 0 20px rgba(249, 115, 22, 0.3), 0 0 40px rgba(249, 115, 22, 0.1)' :
+                     category === 'CRITICAL' ? '0 0 20px rgba(239, 68, 68, 0.3), 0 0 40px rgba(239, 68, 68, 0.1)' :
+                     undefined
+        }}
+      >
         {/* Risk Score Circle */}
         <div className="flex items-center justify-center mb-6">
           <div className="relative">

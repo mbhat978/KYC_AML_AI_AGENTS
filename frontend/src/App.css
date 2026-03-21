@@ -1,3 +1,137 @@
+/* Modern Banking Application Theme - Light Blue */
+.kyc-background {
+  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 50%, #DBEAFE 100%);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+.kyc-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(255, 255, 255, 0.6) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.6) 75%),
+    linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.6) 75%);
+  background-size: 80px 80px;
+  background-position: 0 0, 0 40px, 40px -40px, -40px 0px;
+  opacity: 0.1;
+  animation: subtleShift 60s ease-in-out infinite;
+}
+
+@keyframes subtleShift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, 20px); }
+}
+
+.kyc-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.05), transparent 50%),
+              radial-gradient(circle at 80% 80%, rgba(14, 165, 233, 0.03), transparent 50%),
+              radial-gradient(circle at 40% 20%, rgba(125, 211, 252, 0.04), transparent 50%);
+  pointer-events: none;
+  animation: pulseGlow 10s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kyc-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Modern Card Styles with Hover Effects */
+.modern-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.modern-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Button Animations - Banking Style */
+.modern-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modern-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.modern-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.modern-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.modern-button:active {
+  transform: translateY(0);
+}
+
+/* Glassmorphism Effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* Smooth Transitions for All Interactive Elements */
+* {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+button, a, input, [role="button"] {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover Effects for Cards and Sections */
+section {
+  transition: all 0.3s ease;
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;

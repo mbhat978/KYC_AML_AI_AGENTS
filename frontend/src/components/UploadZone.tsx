@@ -80,15 +80,16 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div
-        className={`relative border-2 border-dashed rounded-lg p-8 transition-all duration-200 ${
+        className={`modern-card relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ease-out ${
           isDragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-gray-400'
+            ? 'border-blue-400 bg-gradient-to-br from-blue-50 to-sky-50 scale-[1.02] shadow-xl'
+            : 'border-gray-300 bg-white/80 hover:border-blue-300 hover:bg-white hover:shadow-lg'
         } ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
         onDragEnter={handleDragIn}
         onDragLeave={handleDragOut}
         onDragOver={handleDrag}
         onDrop={handleDrop}
+        style={{ backdropFilter: 'blur(8px)' }}
       >
         <input
           type="file"
@@ -101,7 +102,9 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
         
         <div className="text-center">
           <svg
-            className="mx-auto h-12 w-12 text-gray-400"
+            className={`mx-auto h-12 w-12 transition-all duration-300 ${
+              isDragging ? 'text-blue-500 scale-110' : 'text-gray-400 hover:text-blue-400'
+            }`}
             stroke="currentColor"
             fill="none"
             viewBox="0 0 48 48"
@@ -118,19 +121,20 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
           <div className="mt-4">
             <label
               htmlFor="file-upload"
-              className="cursor-pointer text-blue-600 hover:text-blue-500 font-medium"
+              className="cursor-pointer text-blue-600 hover:text-blue-700 font-semibold text-lg transition-all duration-200 hover:scale-105 inline-block"
             >
               Upload a KYC document
             </label>
-            <p className="text-gray-500 text-sm mt-1">or drag and drop</p>
+            <p className="text-gray-600 text-sm mt-2 font-medium">or drag and drop</p>
           </div>
           
           <p className="text-xs text-gray-500 mt-2">Supports PDF, JPG, PNG, and JSON formats</p>
           
           {fileName && (
-            <div className="mt-4 p-3 bg-green-50 rounded-md">
-              <p className="text-sm text-green-800">
-                <span className="font-medium">Loaded:</span> {fileName}
+            <div className="mt-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 animate-[slideIn_0.3s_ease-out] shadow-sm">
+              <p className="text-sm text-green-800 font-medium flex items-center justify-center gap-2">
+                <span className="text-green-600">✓</span>
+                <span className="font-semibold">Loaded:</span> {fileName}
               </p>
             </div>
           )}
@@ -138,26 +142,26 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
       </div>
 
       {/* Acceptable Document Types */}
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="text-sm font-semibold text-blue-900 mb-2 text-center">
+      <div className="mt-6 p-5 bg-gradient-to-br from-blue-50 via-sky-50 to-blue-50 border border-blue-200 rounded-xl shadow-sm modern-card glass-effect">
+        <h3 className="text-sm font-bold text-blue-900 mb-3 text-center tracking-wide uppercase">
           Acceptable KYC Documents
         </h3>
-        <div className="flex gap-4 justify-center flex-wrap">
-          <div className="flex items-center gap-2 text-sm text-blue-800">
-            <span className="text-lg">🪪</span>
+        <div className="flex gap-3 justify-center flex-wrap">
+          <div className="flex items-center gap-2 px-4 py-2 bg-white/70 rounded-lg text-sm text-blue-800 font-medium shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-default border border-blue-100">
+            <span className="text-xl">🪪</span>
             <span>PAN Card</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-blue-800">
-            <span className="text-lg">🛂</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-white/70 rounded-lg text-sm text-blue-800 font-medium shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-default border border-blue-100">
+            <span className="text-xl">🛂</span>
             <span>Passport</span>
           </div>
-          <div className="flex items-center gap-2 text-sm text-blue-800">
-            <span className="text-lg">🚗</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-white/70 rounded-lg text-sm text-blue-800 font-medium shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200 cursor-default border border-blue-100">
+            <span className="text-xl">🚗</span>
             <span>Driving License</span>
           </div>
         </div>
-        <p className="text-xs text-blue-700 mt-3 text-center">
-          Please ensure your document is clear and all details are visible
+        <p className="text-xs text-blue-700 mt-4 text-center font-medium">
+          📋 Please ensure your document is clear and all details are visible
         </p>
       </div>
     </div>

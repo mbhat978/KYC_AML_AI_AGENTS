@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import './App.css';
 import { UploadZone } from './components/UploadZone';
 import { LiveFeed } from './components/LiveFeed';
 import { RiskMeter } from './components/RiskMeter';
@@ -90,9 +91,10 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen kyc-background">
+      <div className="kyc-content">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-indigo-100">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -173,7 +175,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-16 border-t border-gray-200 bg-white">
+      <footer className="mt-16 border-t border-indigo-200 bg-white/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between text-sm text-gray-500">
             <p>© 2026 Multi-Agent KYC/AML System. All rights reserved.</p>
@@ -186,6 +188,7 @@ function App() {
           </div>
         </div>
       </footer>
+      </div>
     </div>
   );
 }
