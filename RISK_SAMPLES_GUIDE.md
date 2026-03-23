@@ -579,34 +579,36 @@ Location: `samples/pdf/passport/`
 
 #### 4. `passport_risk60_1.pdf`
 
-**Profile**: Medium-high risk passport with verification concerns
+**Profile**: Robert Williams - Former UK Minister of Finance (PEP)
 
-- **Risk Score**: ~6.0/10 - **MEDIUM RISK**
+- **Risk Score**: ~3.4/10 - **MEDIUM RISK**
 - **Risk Category**: MEDIUM
-- **Extraction Confidence**: 83%
+- **Extraction Confidence**: 85%
 - **Reasoning Confidence**: 60%
 - **Expected Decision**: **ESCALATE** (Manual Review)
 
 **Risk Factors**:
-- ⚠️ Document quality concerns detected
-- ⚠️ Potential tampering indicators
-- ⚠️ Data inconsistencies found
-- ℹ️ Status: Requires manual verification
+- ⚠️ **PEP Match**: Former Minister of Finance, United Kingdom
+- ⚠️ **Political Position**: Former high-ranking government official
+- ⚠️ Risk Level: MEDIUM (former, not active)
+- ℹ️ Status: Requires enhanced due diligence
 
 **Document Characteristics**:
-- Moderate image quality
-- Some data fields partially obscured
-- Minor inconsistencies in formatting
-- Requires human verification
+- Good document quality
+- Clear data extraction
+- Valid passport format
+- All fields readable
 
 **Verification Results**:
-- MRZ validation: Partial concerns
-- Document integrity: Questionable
+- PEP Database: **MATCH FOUND**
+- Position: Former Minister of Finance
+- Country: United Kingdom
+- Status: Former (not currently active)
 - Risk Assessment: Enhanced due diligence required
 
 **Why Medium Risk?**
-- Document quality issues raise concerns (+15-20 points)
-- Need to verify document authenticity
+- Former PEPs carry residual risk (+15-20 points)
+- Need to verify source of funds
 - Enhanced monitoring recommended
 - Not automatic rejection but requires review
 
@@ -618,36 +620,39 @@ Location: `samples/pdf/passport/`
 
 #### 5. `passport_risk70_1.pdf`
 
-**Profile**: High risk passport with significant concerns
+**Profile**: Maria Santos - Sanctions List Match (Money Laundering, Venezuela)
 
 - **Risk Score**: ~7.0/10 - **HIGH RISK**
 - **Risk Category**: HIGH
-- **Extraction Confidence**: 78%
-- **Reasoning Confidence**: 40%
-- **Expected Decision**: **REJECT** or **ESCALATE**
+- **Extraction Confidence**: 85%
+- **Reasoning Confidence**: 10%
+- **Expected Decision**: **REJECT**
 
 **Risk Factors**:
-- ❌ Multiple document quality issues
-- ⚠️ Significant tampering indicators
-- ⚠️ Data validation failures
-- ⚠️ Inconsistent information patterns
+- ❌ **Sanctions Match**: Money laundering activities
+- ⚠️ Country: Venezuela (high-risk jurisdiction)
+- ⚠️ Severity: HIGH (financial crimes)
+- ⚠️ Multiple red flags present
 
 **Document Characteristics**:
-- Significant quality degradation
-- Data extraction challenges
-- Possible photocopied or scanned from copy
-- Enhanced scrutiny required
+- Good document quality
+- Clear data extraction
+- Valid passport format
+- All fields readable
 
 **Verification Results**:
-- MRZ validation: Failed multiple checks
-- Document integrity: Compromised
+- Sanctions List: **MATCH FOUND**
+- Name: Maria Santos
+- Offense: Money laundering
+- Country: Venezuela
+- Severity: HIGH
 - Risk Assessment: Strong rejection candidate
 
 **Why High Risk?**
-- Clear signs of document tampering (+30-40 points)
-- Multiple data inconsistencies
-- High likelihood of fraudulent activity
-- Likely requires rejection or intensive review
+- Sanctions matches are serious (+40 points)
+- Financial crimes history
+- High-risk country (+20 points)
+- Automatic rejection recommended
 
 **Use Case**: Tests detection of forged or tampered passports.
 
@@ -657,38 +662,41 @@ Location: `samples/pdf/passport/`
 
 #### 6. `passport_risk85_1.pdf`
 
-**Profile**: Very high risk passport with critical security concerns
+**Profile**: Ahmed Hassan - CRITICAL Sanctions Match (Terrorism Financing, Syria)
 
 - **Risk Score**: ~8.5/10 - **CRITICAL RISK**
 - **Risk Category**: CRITICAL
-- **Extraction Confidence**: 70%
-- **Reasoning Confidence**: 30%
+- **Extraction Confidence**: 85%
+- **Reasoning Confidence**: 10%
 - **Expected Decision**: **REJECT**
 
 **Risk Factors**:
-- ❌ Severe document integrity violations
-- ❌ Multiple forgery indicators detected
-- ❌ Critical data validation failures
-- ❌ High fraud probability
-- ⚠️ Potential security risk identified
+- ❌ **CRITICAL Sanctions Match**: Terrorism financing
+- ❌ Country: Syria (high-risk jurisdiction)
+- ❌ Severity: CRITICAL (most severe category)
+- ❌ Automatic rejection trigger
+- ⚠️ Listed since 2020-06-22
 
 **Document Characteristics**:
-- Severe quality issues
-- Signs of obvious tampering/forgery
-- Data inconsistencies throughout
-- Failed multiple verification checks
+- Good document quality
+- Clear data extraction
+- Valid passport format
+- All fields readable
 
 **Verification Results**:
-- MRZ validation: Critical failures
-- Document integrity: Severely compromised
+- Sanctions List: **CRITICAL MATCH FOUND**
+- Name: Ahmed Hassan
+- Offense: Terrorism financing
+- Country: Syria
+- Severity: CRITICAL
 - Risk Assessment: Immediate rejection required
 
 **Why Critical Risk?**
-- Obvious signs of forgery or counterfeiting (+50-60 points)
-- Multiple critical red flags
-- Data completely inconsistent or invalid
-- Should be immediately rejected
-- May require reporting to authorities
+- Terrorism financing is the most severe category (+60 points)
+- CRITICAL severity sanctions trigger automatic rejection
+- No manual review option - must reject
+- Highest possible risk factors
+- Legal requirement to deny service
 
 **Use Case**: Tests critical document fraud detection and mandatory rejection flow.
 
@@ -730,14 +738,14 @@ with open('samples/pdf/passport/passport_sample_1.pdf', 'rb') as f:
 
 ### Expected Results Summary
 
-| File | Risk Score | Status | Key Indicators |
+| File | Risk Score (0-10) | Status | Key Indicators |
 |------|-----------|---------|----------------|
-| passport_sample_1.pdf | 15-25 | APPROVED | Clean, high quality |
-| passport_sample_2.pdf | 15-25 | APPROVED | Good quality, minor artifacts |
-| passport_sample_3.pdf | 20-30 | APPROVED | Acceptable quality |
-| passport_risk60_1.pdf | 55-65 | PENDING_REVIEW | Quality concerns, tampering indicators |
-| passport_risk70_1.pdf | 65-75 | PENDING_REVIEW/REJECTED | Multiple issues, significant tampering |
-| passport_risk85_1.pdf | 80-90 | REJECTED | Severe integrity violations, obvious forgery |
+| passport_sample_1.pdf | 1.5-2.5 | APPROVED | Clean, high quality |
+| passport_sample_2.pdf | 1.8-2.5 | APPROVED | Good quality, minor artifacts |
+| passport_sample_3.pdf | 2.0-3.0 | APPROVED | Acceptable quality |
+| passport_risk60_1.pdf | 3.0-4.0 | ESCALATE | Former PEP match (Robert Williams) |
+| passport_risk70_1.pdf | 6.5-7.5 | REJECTED | Sanctions match - Money laundering (Maria Santos) |
+| passport_risk85_1.pdf | 8.0-9.0 | REJECTED | CRITICAL sanctions - Terrorism financing (Ahmed Hassan) |
 
 ---
 

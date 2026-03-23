@@ -40,6 +40,8 @@ def parse_document_data(text: str, file_type: str) -> dict:
     Parse extracted text to identify document type and extract fields.
     This is a simplified parser - in production, you'd use an LLM vision model.
     """
+    import re
+    
     text_upper = text.upper()
     
     # Detect document type
@@ -59,30 +61,77 @@ def parse_document_data(text: str, file_type: str) -> dict:
         "confidence": 0.85  # Placeholder confidence
     }
     
-    # Try to extract name (look for common patterns)
-    lines = text.split('\n')
-    for i, line in enumerate(lines):
-        line_upper = line.upper()
-        if "NAME" in line_upper and i + 1 < len(lines):
-            # Next line likely contains the name
-            potential_name = lines[i + 1].strip()
-            if len(potential_name) > 3 and potential_name.replace(' ', '').isalpha():
-                extracted_fields["name"] = potential_name.title()
-                break
+    # Split text into lines for parsing
+    lines = [line.strip() for line in text.split('\n') if line.strip()]
     
-    # Try to extract PAN number
-    import re
-    pan_pattern = r'[A-Z]{5}[0-9]{4}[A-Z]'
-    pan_match = re.search(pan_pattern, text)
-    if pan_match:
-        extracted_fields["id_number"] = pan_match.group()
-        extracted_fields["document_type"] = "PAN"
+    # PASSPORT-SPECIFIC PARSING
+    if doc_type == "PASSPORT":
+        surname = None
+        given_names = None
+        passport_no = None
+        dob = None
+        nationality = None
+        
+        # Extract passport fields
+        for i, line in enumerate(lines):
+            if "Surname" in line and i + 1 < len(lines):
+                surname = lines[i + 1].strip()
+            elif "Given Names" in line and i + 1 < len(lines):
+                given_names = lines[i + 1].strip()
+            elif "Passport No" in line and i + 1 < len(lines):
+                passport_no = lines[i + 1].strip()
+                extracted_fields["id_number"] = passport_no
+            elif "Date of Birth" in line and i + 1 < len(lines):
+                dob = lines[i + 1].strip()
+                extracted_fields["date_of_birth"] = dob
+            elif "Nationality" in line and i + 1 < len(lines):
+                nationality = lines[i + 1].strip()
+                extracted_fields["nationality"] = nationality
+        
+        # Build full name from surname and given names
+        if surname and given_names:
+            extracted_fields["name"] = f"{given_names} {surname}".title()
+            extracted_fields["surname"] = surname
+            extracted_fields["given_names"] = given_names
+        elif surname:
+            extracted_fields["name"] = surname.title()
+        elif given_names:
+            extracted_fields["name"] = given_names.title()
     
-    # Try to extract dates (DD/MM/YYYY or DD-MM-YYYY)
-    date_pattern = r'\d{2}[/-]\d{2}[/-]\d{4}'
-    date_matches = re.findall(date_pattern, text)
-    if date_matches:
-        extracted_fields["date_of_birth"] = date_matches[0].replace('/', '-')
+    # PAN CARD SPECIFIC PARSING
+    elif doc_type == "PAN":
+        # Try to extract name (look for "Name" label)
+        for i, line in enumerate(lines):
+            line_upper = line.upper()
+            if "NAME" in line_upper and "FATHER" not in line_upper and i + 1 < len(lines):
+                # Next line likely contains the name
+                potential_name = lines[i + 1].strip()
+                if len(potential_name) > 3:
+                    extracted_fields["name"] = potential_name.title()
+                    break
+        
+        # Try to extract PAN number
+        pan_pattern = r'[A-Z]{5}[0-9]{4}[A-Z]'
+        pan_match = re.search(pan_pattern, text)
+        if pan_match:
+            extracted_fields["id_number"] = pan_match.group()
+        
+        # Try to extract DOB
+        date_pattern = r'\d{2}[/-]\d{2}[/-]\d{4}'
+        date_matches = re.findall(date_pattern, text)
+        if date_matches:
+            extracted_fields["date_of_birth"] = date_matches[0].replace('/', '-')
+    
+    # GENERIC NAME EXTRACTION (fallback)
+    else:
+        for i, line in enumerate(lines):
+            line_upper = line.upper()
+            if "NAME" in line_upper and i + 1 < len(lines):
+                # Next line likely contains the name
+                potential_name = lines[i + 1].strip()
+                if len(potential_name) > 3 and potential_name.replace(' ', '').isalpha():
+                    extracted_fields["name"] = potential_name.title()
+                    break
     
     # If no name found, use a placeholder
     if "name" not in extracted_fields:
