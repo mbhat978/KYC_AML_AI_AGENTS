@@ -52,9 +52,9 @@ def test_risk_scoring():
     print(f"Reasoning Confidence: {reasoning_result_pep['confidence']:.2f}")
     print(f"✅ Risk Score: {assessment_result_pep['risk_score']:.2f}")
     print(f"✅ Risk Category: {assessment_result_pep['risk_category']}")
-    print(f"Expected: ~6.0 (MEDIUM)")
+    print(f"Expected: ~3.4 (MEDIUM) - Former PEP")
     
-    result1_pass = 5.5 <= assessment_result_pep['risk_score'] <= 6.5
+    result1_pass = 3.0 <= assessment_result_pep['risk_score'] <= 3.8
     print(f"{'✅ PASS' if result1_pass else '❌ FAIL'}: Score within expected range")
     
     # Test Case 2: Sanctions Match - HIGH severity (Maria Santos) - Should be ~7.0

@@ -334,9 +334,9 @@ Location: `samples/pdf/pan_card/`
 
 - **Risk Score**: ~7.0/10 - **HIGH RISK**
 - **Risk Category**: HIGH
-- **Extraction Confidence**: 80%
-- **Reasoning Confidence**: 30%
-- **Expected Decision**: **ESCALATE** or **REJECT**
+- **Extraction Confidence**: 95%
+- **Reasoning Confidence**: 10%
+- **Expected Decision**: **REJECT**
 
 **Risk Factors**:
 - ❌ **Sanctions Match**: Money laundering activities
@@ -373,9 +373,9 @@ Location: `samples/pdf/pan_card/`
 
 - **Risk Score**: ~7.2/10 - **HIGH RISK**
 - **Risk Category**: HIGH
-- **Extraction Confidence**: 78%
-- **Reasoning Confidence**: 28%
-- **Expected Decision**: **ESCALATE** or **REJECT**
+- **Extraction Confidence**: 95%
+- **Reasoning Confidence**: 10%
+- **Expected Decision**: **REJECT**
 
 **Risk Factors**:
 - ❌ **Sanctions Match**: Financial crimes
@@ -451,14 +451,293 @@ Location: `samples/pdf/pan_card/`
 
 #### 9. `pan_card_risk85_2.pdf`
 
-**Profile**: Ahmed H. - Alias of Sanctioned Individual (Terrorism)
+**Profile**: Ahmed H - CRITICAL Sanctions Match (Terrorism Financing, Syria)
 
-- **Risk Score**: ~0
-This will create:
-- 3 MEDIUM risk documents (risk score 0.60)
-- 3 HIGH risk documents (risk score 0.70)
-- 3 CRITICAL risk documents (risk score 0.85)
-- Total: 9 PAN card PDFs + 6 passport PDFs = 15 files
+- **Risk Score**: ~8.5/10 - **CRITICAL RISK**
+- **Risk Category**: CRITICAL
+- **Extraction Confidence**: 95%
+- **Reasoning Confidence**: 10%
+- **Expected Decision**: **REJECT**
+
+**Risk Factors**:
+- ❌ **CRITICAL Sanctions Match**: Terrorism financing (Ahmed Hassan)
+- ❌ Country: Syria (high-risk jurisdiction)
+- ❌ Severity: CRITICAL (most severe category)
+- ❌ Automatic rejection trigger
+- ⚠️ Alias match detected ("Ahmed H" matches "Ahmed Hassan")
+- ⚠️ Listed since 2020-06-22
+- ⚠️ Government database verification failed
+
+**Document Characteristics**:
+- Name: Ahmed H
+- PAN Number: GAHMD8512K
+- Date of Birth: 30/01/1970
+- Father's Name: Hassan Ali
+- Standard document quality
+- Clear text extraction
+
+**Verification Results**:
+- Sanctions List: **CRITICAL MATCH FOUND** (alias match)
+- Full Name: Ahmed Hassan
+- Aliases: ["A. Hassan", "Ahmed H.", "Ahmed H"]
+- Offense: Terrorism financing
+- Country: Syria
+- Severity: CRITICAL
+- Listed Date: 2020-06-22
+- Risk Assessment: Immediate rejection mandatory
+
+**Why Critical Risk?**
+- Terrorism financing is the most severe category (+60 points)
+- CRITICAL severity sanctions trigger automatic rejection
+- High-risk jurisdiction (Syria) compounds risk (+20 points)
+- Government database verification failed
+- No discretion - must reject per regulations
+- Legal and compliance obligation to deny service
+
+**Use Case**: Tests critical sanctions detection with alias matching ("Ahmed H" → "Ahmed Hassan") and mandatory rejection for terrorism financing. Validates proper handling of name variations and CRITICAL severity sanctions.
+
+---
+
+## Passport PDF Samples
+
+Location: `samples/pdf/passport/`
+
+### Valid/Low Risk Passports
+
+#### 1. `passport_sample_1.pdf`
+
+**Profile**: Clean international passport with verified identity
+
+- **Risk Score**: ~1.5/10 - **LOW RISK**
+- **Risk Category**: LOW
+- **Extraction Confidence**: 92%
+- **Reasoning Confidence**: 90%
+- **Expected Decision**: **APPROVE**
+
+**Document Characteristics**:
+- ✅ High-quality PDF scan
+- ✅ All text clearly readable
+- ✅ Proper passport format
+- ✅ Valid MRZ (Machine Readable Zone)
+- ✅ No signs of tampering
+- ✅ Security features intact
+
+**Typical Contents**:
+- Valid passport number format
+- Clear biographical data
+- Valid issue and expiry dates
+- Proper nationality information
+- MRZ validation passed
+
+**Use Case**: Baseline test for clean, approved international passports.
+
+---
+
+#### 2. `passport_sample_2.pdf`
+
+**Profile**: Standard quality passport with minor artifacts
+
+- **Risk Score**: ~1.8/10 - **LOW RISK**
+- **Risk Category**: LOW
+- **Extraction Confidence**: 90%
+- **Reasoning Confidence**: 88%
+- **Expected Decision**: **APPROVE**
+
+**Document Characteristics**:
+- ✅ Good quality document
+- ⚠️ Minor scanning artifacts (acceptable)
+- ✅ Valid format maintained
+- ✅ All verifications pass
+- ✅ Data fully extractable
+
+**Use Case**: Tests system tolerance for minor quality issues in passport scanning.
+
+---
+
+#### 3. `passport_sample_3.pdf`
+
+**Profile**: Acceptable quality with slight degradation
+
+- **Risk Score**: ~2.2/10 - **LOW RISK**
+- **Risk Category**: LOW
+- **Extraction Confidence**: 88%
+- **Reasoning Confidence**: 85%
+- **Expected Decision**: **APPROVE**
+
+**Document Characteristics**:
+- ✅ Acceptable quality
+- ⚠️ Slight image quality variations
+- ✅ Data fully extractable
+- ✅ No red flags
+- ✅ Within acceptable thresholds
+
+**Use Case**: Tests lower-bound of acceptable passport quality for approval.
+
+---
+
+### Medium Risk Passports
+
+#### 4. `passport_risk60_1.pdf`
+
+**Profile**: Medium-high risk passport with verification concerns
+
+- **Risk Score**: ~6.0/10 - **MEDIUM RISK**
+- **Risk Category**: MEDIUM
+- **Extraction Confidence**: 83%
+- **Reasoning Confidence**: 60%
+- **Expected Decision**: **ESCALATE** (Manual Review)
+
+**Risk Factors**:
+- ⚠️ Document quality concerns detected
+- ⚠️ Potential tampering indicators
+- ⚠️ Data inconsistencies found
+- ℹ️ Status: Requires manual verification
+
+**Document Characteristics**:
+- Moderate image quality
+- Some data fields partially obscured
+- Minor inconsistencies in formatting
+- Requires human verification
+
+**Verification Results**:
+- MRZ validation: Partial concerns
+- Document integrity: Questionable
+- Risk Assessment: Enhanced due diligence required
+
+**Why Medium Risk?**
+- Document quality issues raise concerns (+15-20 points)
+- Need to verify document authenticity
+- Enhanced monitoring recommended
+- Not automatic rejection but requires review
+
+**Use Case**: Tests document quality assessment and escalation workflows.
+
+---
+
+### High Risk Passports
+
+#### 5. `passport_risk70_1.pdf`
+
+**Profile**: High risk passport with significant concerns
+
+- **Risk Score**: ~7.0/10 - **HIGH RISK**
+- **Risk Category**: HIGH
+- **Extraction Confidence**: 78%
+- **Reasoning Confidence**: 40%
+- **Expected Decision**: **REJECT** or **ESCALATE**
+
+**Risk Factors**:
+- ❌ Multiple document quality issues
+- ⚠️ Significant tampering indicators
+- ⚠️ Data validation failures
+- ⚠️ Inconsistent information patterns
+
+**Document Characteristics**:
+- Significant quality degradation
+- Data extraction challenges
+- Possible photocopied or scanned from copy
+- Enhanced scrutiny required
+
+**Verification Results**:
+- MRZ validation: Failed multiple checks
+- Document integrity: Compromised
+- Risk Assessment: Strong rejection candidate
+
+**Why High Risk?**
+- Clear signs of document tampering (+30-40 points)
+- Multiple data inconsistencies
+- High likelihood of fraudulent activity
+- Likely requires rejection or intensive review
+
+**Use Case**: Tests detection of forged or tampered passports.
+
+---
+
+### Critical Risk Passports
+
+#### 6. `passport_risk85_1.pdf`
+
+**Profile**: Very high risk passport with critical security concerns
+
+- **Risk Score**: ~8.5/10 - **CRITICAL RISK**
+- **Risk Category**: CRITICAL
+- **Extraction Confidence**: 70%
+- **Reasoning Confidence**: 30%
+- **Expected Decision**: **REJECT**
+
+**Risk Factors**:
+- ❌ Severe document integrity violations
+- ❌ Multiple forgery indicators detected
+- ❌ Critical data validation failures
+- ❌ High fraud probability
+- ⚠️ Potential security risk identified
+
+**Document Characteristics**:
+- Severe quality issues
+- Signs of obvious tampering/forgery
+- Data inconsistencies throughout
+- Failed multiple verification checks
+
+**Verification Results**:
+- MRZ validation: Critical failures
+- Document integrity: Severely compromised
+- Risk Assessment: Immediate rejection required
+
+**Why Critical Risk?**
+- Obvious signs of forgery or counterfeiting (+50-60 points)
+- Multiple critical red flags
+- Data completely inconsistent or invalid
+- Should be immediately rejected
+- May require reporting to authorities
+
+**Use Case**: Tests critical document fraud detection and mandatory rejection flow.
+
+---
+
+## Testing Passport Samples
+
+### Quick Test Commands
+
+#### Test Individual Passport (cURL)
+```bash
+# Test low-risk passport
+curl -X POST http://localhost:8000/api/upload \
+  -F "file=@samples/pdf/passport/passport_sample_1.pdf"
+
+# Test medium-risk passport
+curl -X POST http://localhost:8000/api/upload \
+  -F "file=@samples/pdf/passport/passport_risk60_1.pdf"
+
+# Test high-risk passport
+curl -X POST http://localhost:8000/api/upload \
+  -F "file=@samples/pdf/passport/passport_risk70_1.pdf"
+
+# Test critical-risk passport
+curl -X POST http://localhost:8000/api/upload \
+  -F "file=@samples/pdf/passport/passport_risk85_1.pdf"
+```
+
+#### Test with Python
+```python
+import requests
+
+# Test a passport sample
+with open('samples/pdf/passport/passport_sample_1.pdf', 'rb') as f:
+    files = {'file': f}
+    response = requests.post('http://localhost:8000/api/upload', files=files)
+    print(response.json())
+```
+
+### Expected Results Summary
+
+| File | Risk Score | Status | Key Indicators |
+|------|-----------|---------|----------------|
+| passport_sample_1.pdf | 15-25 | APPROVED | Clean, high quality |
+| passport_sample_2.pdf | 15-25 | APPROVED | Good quality, minor artifacts |
+| passport_sample_3.pdf | 20-30 | APPROVED | Acceptable quality |
+| passport_risk60_1.pdf | 55-65 | PENDING_REVIEW | Quality concerns, tampering indicators |
+| passport_risk70_1.pdf | 65-75 | PENDING_REVIEW/REJECTED | Multiple issues, significant tampering |
+| passport_risk85_1.pdf | 80-90 | REJECTED | Severe integrity violations, obvious forgery |
 
 ---
 
