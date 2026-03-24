@@ -3,6 +3,7 @@ KYC/AML Multi-Agent Orchestrator with LangGraph StateGraph
 Coordinates the flow between agents with shared state management
 """
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
 from typing import TypedDict, Dict, Any, Optional
 from loguru import logger
 from agents import (
@@ -126,6 +127,45 @@ class KYCOrchestrator:
             "workflow_log": workflow_log
         }
     
+    def human_review_node(self, state: KYCState) -> Dict[str, Any]:
+        """
+        Human-in-the-Loop node that pauses the graph for manual review.
+        This is a placeholder that the frontend can interact with.
+        """
+        logger.info("⏸️ Graph paused for Human Review...")
+        # In LangGraph, when a node is set as an interrupt, returning the state is enough
+        return state
+    
+    def _route_after_verification(self, state: KYCState) -> str:
+        """
+        Routing logic after verification node.
+        If verification fails, route back to extraction (cyclic loop).
+        Otherwise, continue to reasoning.
+        """
+        verification_status = state.get("verification_result", {}).get("verification_status")
+        
+        if verification_status == "FAILED":
+            logger.info("🔄 Verification FAILED - Routing back to extraction for retry")
+            return "extract"
+        
+        logger.info("✅ Verification passed - Routing to reasoning")
+        return "reason"
+    
+    def _route_after_decision(self, state: KYCState) -> str:
+        """
+        Routing logic after decision node.
+        If decision is ESCALATE, route to human review (HITL).
+        Otherwise, end the workflow.
+        """
+        decision = state.get("decision_result", {}).get("decision")
+        
+        if decision == "ESCALATE":
+            logger.info("🚨 Decision is ESCALATE - Routing to human review")
+            return "human_review"
+        
+        logger.info("✅ Decision complete - Ending workflow")
+        return END
+    
     def _build_graph(self):
         """Build the LangGraph StateGraph for the KYC pipeline."""
         # Initialize the StateGraph
@@ -137,17 +177,27 @@ class KYCOrchestrator:
         workflow.add_node("reason", self.reason_node)
         workflow.add_node("assess", self.assess_node)
         workflow.add_node("decide", self.decide_node)
+        workflow.add_node("human_review", self.human_review_node)
         
-        # Add linear edges: START -> extract -> verify -> reason -> assess -> decide -> END
+        # Add edges
         workflow.add_edge(START, "extract")
         workflow.add_edge("extract", "verify")
-        workflow.add_edge("verify", "reason")
+        
+        # Replace linear edges with conditional edges
+        workflow.add_conditional_edges("verify", self._route_after_verification)
+        
         workflow.add_edge("reason", "assess")
         workflow.add_edge("assess", "decide")
-        workflow.add_edge("decide", END)
         
-        # Compile the graph
-        self.graph = workflow.compile()
+        workflow.add_conditional_edges("decide", self._route_after_decision)
+        workflow.add_edge("human_review", END)
+        
+        # Compile the graph with checkpointer and interrupt
+        memory = MemorySaver()
+        self.graph = workflow.compile(
+            checkpointer=memory,
+            interrupt_before=["human_review"]
+        )
     
     def process_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -169,7 +219,10 @@ class KYCOrchestrator:
                 "document": document,
                 "workflow_log": []
             }
-            final_state = self.graph.invoke(initial_state)
+            
+            # Configure with thread ID for checkpointer support
+            config = {"configurable": {"thread_id": "1"}}  # In production, this would be the session ID
+            final_state = self.graph.invoke(initial_state, config=config)
             
             # Extract results from final state
             extraction_result = final_state.get("extraction_result", {})
