@@ -1,10 +1,13 @@
 """
 Verification Agent - LangGraph ReAct Agent with Tool-Calling
 Phase 3: Dynamic Autonomous Verification using LangGraph ReAct Pattern
+WITH ERROR HANDLING AND RETRY LOGIC
 """
 from typing import Dict, Any, List
 import json
 import os
+import time
+import random
 from datetime import datetime
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
@@ -95,7 +98,7 @@ def search_pep_list(name: str) -> dict:
 
 class VerificationOutput(BaseModel):
     """Structured output schema for verification results"""
-    verification_status: str = Field(description="Overall status: VERIFIED, FAILED, FLAGGED, PARTIAL")
+    verification_status: str = Field(description="Overall status: VERIFIED, FAILED, FLAGGED, PARTIAL, ERROR")
     confidence: float = Field(description="Confidence score 0.0-1.0")
     matches: Dict[str, Any] = Field(description="Results from government_db, sanctions, pep")
     discrepancies: List[str] = Field(description="List of issues found")
@@ -103,43 +106,85 @@ class VerificationOutput(BaseModel):
     status: str = Field(default="success")
 
 
-# ============================================================================
-# REACT AGENT CLASS
-# ============================================================================
-
 class VerificationResult(BaseModel):
-    verification_status: str = Field(description="Must be exactly 'VERIFIED' or 'FAILED'")
+    verification_status: str = Field(description="Must be exactly 'VERIFIED', 'FAILED', 'FLAGGED', or 'ERROR'")
     confidence: float = Field(default=1.0)
     matches: Dict[str, Any] = Field(default_factory=dict)
     discrepancies: List[str] = Field(default_factory=list)
 
 
+# ============================================================================
+# REACT AGENT CLASS WITH RETRY LOGIC
+# ============================================================================
+
 class VerificationAgent:
-    """LangGraph ReAct Agent for autonomous multi-source verification"""
+    """LangGraph ReAct Agent for autonomous multi-source verification with retry logic"""
     
     def __init__(self):
         self.llm = get_llm_client()._client
         self.tools = [search_government_db, search_sanctions_list, search_pep_list]
-        logger.info("Verification ReAct Agent initialized with tools")
+        logger.info("Verification ReAct Agent initialized with tools and retry logic")
     
-    def verify(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def verify(self,  data: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Verify extracted data using autonomous ReAct agent with tool-calling
+        Verify extracted data using autonomous ReAct agent with tool-calling.
+        Includes retry logic for API errors (503, 429, 500, timeouts).
         
         Args:
-             Dictionary containing extracted identity data (name, id_number, etc.)
+            data: Dictionary containing extracted identity data (name, id_number, etc.)
             
         Returns:
             Dictionary with verification_status, confidence, matches, discrepancies
         """
-        logger.info("🤖 Starting ReAct Agent verification")
+        logger.info("🤖 Starting ReAct Agent verification with retry logic")
         
-        try:
-            # Build the ReAct agent with tools
-            agent = create_react_agent(self.llm, self.tools)
-            
-            # System prompt for autonomous verification
-            system_prompt = """You are an autonomous KYC Verification Agent. You MUST:
+        max_retries = 3
+        initial_delay = 2.0
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # Execute verification
+                result = self._execute_verification(data)
+                logger.info(f"✅ Verification completed successfully on attempt {attempt + 1}")
+                return result
+                
+            except Exception as e:
+                error_str = str(e).lower()
+                
+                # Check if error is retryable (503, 429, 500, timeout, connection errors)
+                is_retryable = any(code in error_str for code in [
+                    '503', '429', '500', 'timeout', 'timed out', 
+                    'connection', 'server error', 'service unavailable',
+                    'rate limit', 'too many requests'
+                ])
+                
+                # If this was the last attempt or error is not retryable, return ERROR
+                if attempt >= max_retries or not is_retryable:
+                    logger.error(f"❌ Verification failed after {attempt + 1} attempts: {str(e)}")
+                    return self._create_error_response(e)
+                
+                # Calculate sleep time with jitter to prevent thundering herd
+                delay = initial_delay * (2 ** attempt)  # Exponential backoff: 2s, 4s, 8s
+                jitter = random.uniform(0, 0.3 * delay)
+                sleep_time = delay + jitter
+                
+                logger.warning(f"⚠️ Verification attempt {attempt + 1}/{max_retries + 1} failed: {str(e)[:150]}")
+                logger.info(f"🔄 Retrying in {sleep_time:.2f}s...")
+                time.sleep(sleep_time)
+        
+        # Should never reach here, but just in case
+        return self._create_error_response(Exception("Maximum retries exceeded"))
+    
+    def _execute_verification(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Internal method that executes the actual verification logic.
+        Can raise exceptions for retry mechanism.
+        """
+        # Build the ReAct agent with tools
+        agent = create_react_agent(self.llm, self.tools)
+        
+        # System prompt for autonomous verification
+        system_prompt = """You are an autonomous KYC Verification Agent. You MUST:
 1. Use search_government_db to verify the identity in official records
 2. Use search_sanctions_list to check for sanctions/watchlist matches  
 3. Use search_pep_list to check for Politically Exposed Person status
@@ -150,112 +195,117 @@ After using all three tools, provide a final summary with:
 - verification_status: "VERIFIED" if gov DB found and no sanctions/PEP issues, "FAILED" if not in gov DB, "FLAGGED" if sanctions/PEP hit
 - confidence: 0.0-1.0 based on match quality
 - Summary of findings from all three databases"""
-            
-            # Prepare the input message
-            user_message = f"""Verify this identity:
+        
+        # Prepare the input message
+        user_message = f"""Verify this identity:
 Name: {data.get('name', 'Unknown')}
 ID Number: {data.get('id_number', 'Unknown')}
 DOB: {data.get('date_of_birth', 'Unknown')}
 
 Use ALL three tools to complete verification."""
-            
-            # Invoke the agent
-            input_state = {
-                "messages": [
-                    HumanMessage(content=f"{system_prompt}\n\n{user_message}")
-                ]
-            }
-            
-            result = agent.invoke(input_state)
-            
-            # Extract tool call results from the agent's execution
-            matches_dict = {
-                'government_db': {'status': 'clear'},
-                'sanctions': {'status': 'clear'},
-                'pep': {'status': 'clear'}
-            }
-            
-            # Parse through messages to find tool call results
-            # LangGraph stores tool results in ToolMessage objects
-            for message in result["messages"]:
-                # Check if this is a ToolMessage (has 'name' attribute)
-                if hasattr(message, 'name'):
-                    tool_name = message.name
-                    # Content is the tool result (already a dict)
-                    tool_result = message.content
-                    if isinstance(tool_result, str):
-                        try:
-                            tool_result = json.loads(tool_result)
-                        except:
-                            continue
-                    if not isinstance(tool_result, dict):
+        
+        # Invoke the agent (this can raise exceptions)
+        input_state = {
+            "messages": [
+                HumanMessage(content=f"{system_prompt}\n\n{user_message}")
+            ]
+        }
+        
+        result = agent.invoke(input_state)
+        
+        # Extract tool call results from the agent's execution
+        matches_dict = {
+            'government_db': {'status': 'clear'},
+            'sanctions': {'status': 'clear'},
+            'pep': {'status': 'clear'}
+        }
+        
+        # Parse through messages to find tool call results
+        for message in result["messages"]:
+            if hasattr(message, 'name'):
+                tool_name = message.name
+                tool_result = message.content
+                if isinstance(tool_result, str):
+                    try:
+                        tool_result = json.loads(tool_result)
+                    except:
                         continue
-                    
-                    # Process government DB results
-                    if tool_name == 'search_government_db' and tool_result.get('found'):
-                        matches_dict['government_db'] = {
-                            'status': 'match' if tool_result.get('match_confidence', 0) == 1.0 else 'mismatch',
-                            'confidence': tool_result.get('match_confidence', 0.0),
-                            'record': tool_result.get('record', {}),
-                            'note': tool_result.get('note', '')
-                        }
-                    
-                    # Process sanctions results
-                    elif tool_name == 'search_sanctions_list' and tool_result.get('found'):
-                        matches_dict['sanctions'] = {
-                            'status': 'flagged',
-                            'severity': tool_result.get('severity', 'HIGH'),
-                            'reason': tool_result.get('reason', ''),
-                            'note': tool_result.get('note', '')
-                        }
-                    
-                    # Process PEP results
-                    elif tool_name == 'search_pep_list' and tool_result.get('found'):
-                        matches_dict['pep'] = {
-                            'status': 'flagged',
-                            'risk_level': tool_result.get('risk_level', 'MEDIUM'),
-                            'position': tool_result.get('position', ''),
-                            'country': tool_result.get('country', ''),
-                            'note': tool_result.get('note', '')
-                        }
-            
-            # Determine overall verification status
-            has_sanctions = matches_dict['sanctions']['status'] == 'flagged'
-            has_pep = matches_dict['pep']['status'] == 'flagged'
-            gov_db_match = matches_dict['government_db']['status'] in ['match', 'mismatch']
-            
-            if has_sanctions or has_pep:
-                verification_status = "FLAGGED"
-                confidence = 0.9
-            elif gov_db_match:
-                verification_status = "VERIFIED" if matches_dict['government_db']['status'] == 'match' else "PARTIAL"
-                confidence = matches_dict['government_db'].get('confidence', 0.8)
-            else:
-                verification_status = "FAILED"
-                confidence = 0.2
-            
-            # Build discrepancies list
-            discrepancies = []
-            if matches_dict['government_db']['status'] == 'mismatch':
-                discrepancies.append(matches_dict['government_db'].get('note', 'Name mismatch'))
-            if not gov_db_match and not has_sanctions and not has_pep:
-                discrepancies.append('Identity not found in government database')
+                if not isinstance(tool_result, dict):
+                    continue
+                
+                # Process government DB results
+                if tool_name == 'search_government_db' and tool_result.get('found'):
+                    matches_dict['government_db'] = {
+                        'status': 'match' if tool_result.get('match_confidence', 0) == 1.0 else 'mismatch',
+                        'confidence': tool_result.get('match_confidence', 0.0),
+                        'record': tool_result.get('record', {}),
+                        'note': tool_result.get('note', '')
+                    }
+                
+                # Process sanctions results
+                elif tool_name == 'search_sanctions_list' and tool_result.get('found'):
+                    matches_dict['sanctions'] = {
+                        'status': 'flagged',
+                        'severity': tool_result.get('severity', 'HIGH'),
+                        'reason': tool_result.get('reason', ''),
+                        'note': tool_result.get('note', '')
+                    }
+                
+                # Process PEP results
+                elif tool_name == 'search_pep_list' and tool_result.get('found'):
+                    matches_dict['pep'] = {
+                        'status': 'flagged',
+                        'risk_level': tool_result.get('risk_level', 'MEDIUM'),
+                        'position': tool_result.get('position', ''),
+                        'country': tool_result.get('country', ''),
+                        'note': tool_result.get('note', '')
+                    }
+        
+        # Determine overall verification status
+        has_sanctions = matches_dict['sanctions']['status'] == 'flagged'
+        has_pep = matches_dict['pep']['status'] == 'flagged'
+        gov_db_match = matches_dict['government_db']['status'] in ['match', 'mismatch']
+        
+        if has_sanctions or has_pep:
+            verification_status = "FLAGGED"
+            confidence = 0.9
+        elif gov_db_match:
+            verification_status = "VERIFIED" if matches_dict['government_db']['status'] == 'match' else "PARTIAL"
+            confidence = matches_dict['government_db'].get('confidence', 0.8)
+        else:
+            verification_status = "FAILED"
+            confidence = 0.2
+        
+        # Build discrepancies list
+        discrepancies = []
+        if matches_dict['government_db']['status'] == 'mismatch':
+            discrepancies.append(matches_dict['government_db'].get('note', 'Name mismatch'))
+        if not gov_db_match and not has_sanctions and not has_pep:
+            discrepancies.append('Identity not found in government database')
 
-            # Return the perfectly formatted dictionary for the Orchestrator
-            return {
-                'verification_status': verification_status,
-                'confidence': confidence,
-                'matches': matches_dict,
-                'discrepancies': discrepancies
-            }
-            
-        except Exception as e:
-            logger.error(f"❌ Verification failed: {str(e)}")
-            return {
-                "verification_status": "ERROR",
-                "confidence": 0.0,
-                "matches": {},
-                "discrepancies": [f"Verification error: {str(e)}"],
-                "agent": "VerificationAgent",
-                "status": "error"
-            }
+        # Return the perfectly formatted dictionary for the Orchestrator
+        return {
+            'verification_status': verification_status,
+            'confidence': confidence,
+            'matches': matches_dict,
+            'discrepancies': discrepancies
+        }
+    
+    def _create_error_response(self, error: Exception) -> Dict[str, Any]:        
+        """Create standardized error response for verification failures."""
+        error_msg = str(error)
+        logger.error(f"Creating error response: {error_msg}")
+        
+        return {
+            'verification_status': 'ERROR',
+            'confidence': 0.0,
+            'matches': {
+                'government_db': {'status': 'error', 'note': 'Service unavailable'},
+                'sanctions': {'status': 'error', 'note': 'Service unavailable'},
+                'pep': {'status': 'error', 'note': 'Service unavailable'}
+            },
+            'discrepancies': [f'Verification service error: {error_msg}'],
+            'agent': 'VerificationAgent',
+            'status': 'error',
+            'error': error_msg
+        }

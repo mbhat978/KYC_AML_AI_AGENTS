@@ -37,6 +37,21 @@ export interface StreamEvent {
   timestamp: string;
 }
 
+export interface TransactionMonitoring {
+  suspicious_activity: boolean;
+  aml_flags: {
+    sanctions_hit: boolean;
+    pep_match: boolean;
+    high_velocity: boolean;
+    structuring_detected: boolean;
+    smurfing_detected: boolean;
+    unusual_amount: boolean;
+  };
+  risk_score: number;
+  risk_level: string;
+  summary: string;
+}
+
 export interface FinalDecision {
   session_id?: string;
   decision: 'APPROVE' | 'REJECT' | 'ESCALATE' | 'ERROR';
@@ -46,6 +61,7 @@ export interface FinalDecision {
   explanation: string;
   recommendation: string;
   extracted_data: any;
+  transaction_analysis?: TransactionMonitoring;
   audit_trail: any;
   timestamp: string;
 }

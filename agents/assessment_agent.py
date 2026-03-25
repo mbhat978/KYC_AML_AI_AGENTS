@@ -12,14 +12,14 @@ class AssessmentAgent:
     def __init__(self):
         logger.info("Assessment Agent initialized")
     
-    def assess(self, reasoning_result: Dict[str, Any], verification_result: Dict[str, Any]) -> Dict[str, Any]:
-        """Assign context-aware risk score"""
+    def assess(self, reasoning_result: Dict[str, Any], verification_result: Dict[str, Any], transaction_analysis: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Assign context-aware risk score including AML transaction risk if available"""
         logger.info("Starting risk assessment")
         
         try:
-            base_score = self._calculate_base_score(reasoning_result, verification_result)
+            base_score = self._calculate_base_score(reasoning_result, verification_result, transaction_analysis)
             risk_category = self._categorize_risk(base_score)
-            risk_factors = self._identify_risk_factors(reasoning_result, verification_result)
+            risk_factors = self._identify_risk_factors(reasoning_result, verification_result, transaction_analysis)
             
             result = {
                 "risk_score": base_score,
@@ -42,9 +42,31 @@ class AssessmentAgent:
                 "status": "error"
             }
     
-    def _calculate_base_score(self, reasoning: Dict, verification: Dict) -> float:
-        """Calculate base risk score (1-10 scale, higher=riskier)"""
+    def _calculate_base_score(self, reasoning: Dict, verification: Dict, transaction_analysis: Dict = None) -> float:
+        """Calculate base risk score (1-10 scale, higher=riskier) including AML transaction risk"""
         score = 3.0  # Start lower to allow proper scaling
+        
+        # CRITICAL: Check AML transaction flags first - they can override identity scores
+        if transaction_analysis:
+            aml_flags = transaction_analysis.get('aml_flags', {})
+            risk_level = transaction_analysis.get('risk_level', 'LOW')
+            
+            # Severe AML flags significantly elevate risk
+            if aml_flags.get('sanctions_hit'):
+                # Sanctions hit in transactions is CRITICAL
+                return 8.5  # Override all other scores
+            
+            if aml_flags.get('structuring_detected'):
+                # Structuring is high risk
+                score += 3.5  # Brings base to 6.5
+            
+            if aml_flags.get('high_velocity') and risk_level == 'HIGH':
+                score += 2.0
+            elif aml_flags.get('high_velocity'):
+                score += 1.0
+            
+            if aml_flags.get('pep_match'):
+                score += 1.5
         
         # Sanctions/PEP flags with proper severity levels
         matches = verification.get('matches', {})
@@ -124,9 +146,22 @@ class AssessmentAgent:
         else:
             return "CRITICAL"
     
-    def _identify_risk_factors(self, reasoning: Dict, verification: Dict) -> list:
-        """Identify specific risk factors"""
+    def _identify_risk_factors(self, reasoning: Dict, verification: Dict, transaction_analysis: Dict = None) -> list:
+        """Identify specific risk factors including transaction-based risks"""
         factors = []
         factors.extend(reasoning.get('risk_factors', []))
         factors.extend(verification.get('discrepancies', []))
+        
+        # Add transaction-based risk factors if present
+        if transaction_analysis:
+            aml_flags = transaction_analysis.get('aml_flags', {})
+            if aml_flags.get('sanctions_hit'):
+                factors.append("AML: Transaction involves sanctioned entity")
+            if aml_flags.get('pep_match'):
+                factors.append("AML: Transaction involves PEP")
+            if aml_flags.get('high_velocity'):
+                factors.append("AML: High velocity transaction pattern")
+            if aml_flags.get('structuring_detected'):
+                factors.append("AML: Potential structuring detected")
+        
         return list(set(factors))  # Remove duplicates

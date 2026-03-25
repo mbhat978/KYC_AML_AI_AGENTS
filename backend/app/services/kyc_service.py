@@ -98,6 +98,20 @@ class KYCServiceWithStreaming:
             yield self._format_sse_event({"session_id": session_id, "agent": "VerificationAgent", "step": "verification", "status": "completed", "message": ver_status, "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.3)
             
+            # Check if transaction analysis was performed
+            has_transaction_analysis = 'transaction_analysis' in result and result['transaction_analysis']
+            if has_transaction_analysis:
+                yield self._format_sse_event({"session_id": session_id, "agent": "TransactionAgent", "step": "transaction_analysis", "status": "processing", "message": "💰 Analyzing transactions for AML patterns...", "timestamp": datetime.now().isoformat()})
+                await asyncio.sleep(0.3)
+                
+                trans_analysis = result['transaction_analysis']
+                trans_msg = f"✅ AML Analysis: {trans_analysis.get('risk_level', 'N/A')} risk"
+                if trans_analysis.get('suspicious_activity'):
+                    trans_msg = f"⚠️ Suspicious activity detected - Risk: {trans_analysis.get('risk_level', 'HIGH')}"
+                
+                yield self._format_sse_event({"session_id": session_id, "agent": "TransactionAgent", "step": "transaction_analysis", "status": "completed", "message": trans_msg, "timestamp": datetime.now().isoformat()})
+                await asyncio.sleep(0.3)
+            
             yield self._format_sse_event({"session_id": session_id, "agent": "ReasoningAgent", "step": "reasoning", "status": "processing", "message": "🧠 Analyzing consistency...", "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.2)
             

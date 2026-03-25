@@ -13,13 +13,15 @@ class ReasoningAgent:
     def __init__(self):
         logger.info("Reasoning Agent initialized")
     
-    def reason(self, extraction_result: Dict[str, Any], verification_result: Dict[str, Any]) -> Dict[str, Any]:
+    def reason(self, extraction_result: Dict[str, Any], verification_result: Dict[str, Any], transaction_analysis: Dict[str, Any] = None) -> Dict[str, Any]:
         """
-        Analyze verification results and make intelligent decisions
+        Analyze verification results and make intelligent decisions.
+        Enhanced Due Diligence (EDD) - evaluates BOTH identity risk and financial risk.
         
         Args:
             extraction_result: Results from extraction agent
             verification_result: Results from verification agent
+            transaction_analysis: Optional AML transaction analysis results
             
         Returns:
             Reasoning analysis with recommendations
@@ -38,6 +40,40 @@ class ReasoningAgent:
             risk_factors = []
             should_reverify = False
             additional_sources_needed = []
+            
+            # Handle ERROR status from verification (service unavailable)
+            if verification_status == "ERROR":
+                error_msg = verification_result.get('error', 'Verification service unavailable')
+                risk_factors.append(f"CRITICAL: Verification service error - {error_msg}")
+                conclusion = "ESCALATE"
+                confidence = 0.1
+                logger.warning(f"Verification ERROR detected: {error_msg}")
+                # Skip further analysis and return escalation immediately
+                result = {
+                    "reasoning_conclusion": conclusion,
+                    "confidence": confidence,
+                    "should_reverify": should_reverify,
+                    "additional_sources_needed": additional_sources_needed,
+                    "analysis": self._generate_analysis(extracted_data, verification_result, conclusion, transaction_analysis),
+                    "risk_factors": risk_factors,
+                    "reasoning_loops_used": reasoning_loops,
+                    "agent": "ReasoningAgent",
+                    "status": "success"
+                }
+                logger.info(f"Reasoning completed: {conclusion} (confidence: {confidence:.2f}) - Verification ERROR")
+                return result
+            
+            # Check for AML transaction flags if present
+            if transaction_analysis:
+                aml_flags = transaction_analysis.get('aml_flags', {})
+                if aml_flags.get('sanctions_hit'):
+                    risk_factors.append("CRITICAL: Transaction involves sanctioned entity")
+                if aml_flags.get('pep_match'):
+                    risk_factors.append("HIGH RISK: Transaction involves PEP")
+                if aml_flags.get('high_velocity'):
+                    risk_factors.append("MEDIUM RISK: High velocity transaction pattern detected")
+                if aml_flags.get('structuring_detected'):
+                    risk_factors.append("HIGH RISK: Potential structuring detected")
             
             # Check sanctions/PEP flags (CRITICAL)
             if matches.get('sanctions', {}).get('status') == 'flagged':
@@ -98,7 +134,7 @@ class ReasoningAgent:
                 "confidence": confidence,
                 "should_reverify": should_reverify,
                 "additional_sources_needed": additional_sources_needed,
-                "analysis": self._generate_analysis(extracted_data, verification_result, conclusion),
+                "analysis": self._generate_analysis(extracted_data, verification_result, conclusion, transaction_analysis),
                 "risk_factors": risk_factors,
                 "reasoning_loops_used": reasoning_loops,
                 "agent": "ReasoningAgent",
@@ -121,15 +157,27 @@ class ReasoningAgent:
                 "status": "error"
             }
     
-    def _generate_analysis(self, extracted_data: Dict, verification_result: Dict, conclusion: str) -> str:
+    def _generate_analysis(self, extracted_data: Dict, verification_result: Dict, conclusion: str, transaction_analysis: Dict = None) -> str:
         """Generate human-readable analysis"""
         name = extracted_data.get('name', 'Unknown')
         id_num = extracted_data.get('id_number', 'Unknown')
         verification_status = verification_result.get('verification_status').upper()
         
-        analysis = f"Analysis for {name} (ID: {id_num}):\n"
+        analysis = f"Enhanced Due Diligence (EDD) Analysis for {name} (ID: {id_num}):\n"
         analysis += f"- Verification Status: {verification_status}\n"
         analysis += f"- Recommendation: {conclusion}\n"
+        
+        # Add transaction analysis if present
+        if transaction_analysis:
+            analysis += "\n--- AML Transaction Analysis ---\n"
+            aml_flags = transaction_analysis.get('aml_flags', {})
+            risk_level = transaction_analysis.get('risk_level', 'UNKNOWN')
+            analysis += f"- Transaction Risk Level: {risk_level}\n"
+            analysis += f"- Sanctions Hit: {'YES' if aml_flags.get('sanctions_hit') else 'NO'}\n"
+            analysis += f"- PEP Match: {'YES' if aml_flags.get('pep_match') else 'NO'}\n"
+            analysis += f"- High Velocity: {'YES' if aml_flags.get('high_velocity') else 'NO'}\n"
+            analysis += f"- Structuring: {'YES' if aml_flags.get('structuring_detected') else 'NO'}\n"
+            analysis += "--------------------------------\n"
         
         matches = verification_result.get('matches', {})
         if matches.get('government_db', {}).get('status') == 'match':

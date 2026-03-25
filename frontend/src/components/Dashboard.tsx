@@ -6,6 +6,8 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ decision }) => {
+  console.log('🎯 [Dashboard Component] Received decision prop:', decision);
+  
   if (!decision) {
     return (
       <div className="w-full">
@@ -113,6 +115,47 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision }) => {
               {decision.recommendation}
             </p>
           </div>
+
+          {/* Transaction Analysis Section */}
+          {decision.transaction_analysis && (
+            <div className="animate-[slideIn_0.75s_ease-out]">
+              <h4 className={`text-sm font-bold ${colors.text} mb-3 flex items-center gap-2 uppercase tracking-wide`}>
+                <span>🔍</span>
+                AML Transaction Analysis
+              </h4>
+              <div className="bg-white/80 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm">
+                <dl className="grid grid-cols-3 gap-4 text-sm mb-4">
+                  <div>
+                    <dt className="text-gray-500 font-medium">Suspicious Activity:</dt>
+                    <dd className={`text-lg font-bold mt-1 ${decision.transaction_analysis.suspicious_activity ? 'text-red-600' : 'text-green-600'}`}>
+                      {decision.transaction_analysis.suspicious_activity ? 'YES ⚠️' : 'NO ✓'}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500 font-medium">AML Risk Score:</dt>
+                    <dd className="text-lg font-bold mt-1 text-gray-900">
+                      {decision.transaction_analysis.risk_score.toFixed(1)}/10.0
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500 font-medium">Risk Level:</dt>
+                    <dd className={`text-lg font-bold mt-1 ${
+                      decision.transaction_analysis.risk_level === 'HIGH' ? 'text-red-600' :
+                      decision.transaction_analysis.risk_level === 'MEDIUM' ? 'text-yellow-600' :
+                      'text-green-600'
+                    }`}>
+                      {decision.transaction_analysis.risk_level}
+                    </dd>
+                  </div>
+                </dl>
+                {decision.transaction_analysis.summary && (
+                  <p className="text-sm text-gray-700 leading-relaxed mt-3">
+                    {decision.transaction_analysis.summary}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Extracted Data */}
           {decision.extracted_data && (

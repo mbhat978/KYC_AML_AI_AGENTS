@@ -13,6 +13,7 @@ from agents import (
     AssessmentAgent,
     DecisionAgent
 )
+from agents.transaction_agent import TransactionAnalysisAgent
 from config.settings import settings
 
 
@@ -22,6 +23,8 @@ class KYCState(TypedDict):
     extraction_result: Dict[str, Any]
     extracted_data: Dict[str, Any]
     verification_result: Dict[str, Any]
+    transaction_csv_data: Optional[str]
+    transaction_analysis: Dict[str, Any]
     reasoning_result: Dict[str, Any]
     assessment_result: Dict[str, Any]
     decision_result: Dict[str, Any]
@@ -34,6 +37,7 @@ class KYCOrchestrator:
     def __init__(self):
         self.extraction_agent = ExtractionAgent()
         self.verification_agent = VerificationAgent()
+        self.transaction_agent = TransactionAnalysisAgent()
         self.reasoning_agent = ReasoningAgent()
         self.assessment_agent = AssessmentAgent()
         self.decision_agent = DecisionAgent()
@@ -76,12 +80,28 @@ class KYCOrchestrator:
             "workflow_log": workflow_log
         }
     
+    def analyze_transactions_node(self, state: KYCState) -> Dict[str, Any]:
+        """Node wrapper for transaction analysis agent."""
+        logger.info("\n[STEP 2.5] TRANSACTION ANALYSIS (AML)")
+        result = self.transaction_agent.analyze(state.get("transaction_csv_data"))
+        
+        workflow_log = state.get("workflow_log", [])
+        workflow_log.append({"step": "transaction_analysis", "result": result})
+        
+        logger.info(f"AML Analysis - Suspicious Activity: {result.get('suspicious_activity')}, Risk Score: {result.get('risk_score')}")
+        
+        return {
+            "transaction_analysis": result,
+            "workflow_log": workflow_log
+        }
+    
     def reason_node(self, state: KYCState) -> Dict[str, Any]:
         """Node wrapper for reasoning agent."""
         logger.info("\n[STEP 3] REASONING")
         extraction_result = state["extraction_result"]
         verification_result = state["verification_result"]
-        reasoning_result = self.reasoning_agent.reason(extraction_result, verification_result)
+        transaction_analysis = state.get("transaction_analysis")
+        reasoning_result = self.reasoning_agent.reason(extraction_result, verification_result, transaction_analysis)
         
         workflow_log = state.get("workflow_log", [])
         workflow_log.append({"step": "reasoning", "result": reasoning_result})
@@ -98,7 +118,8 @@ class KYCOrchestrator:
         logger.info("\n[STEP 4] ASSESSMENT")
         reasoning_result = state["reasoning_result"]
         verification_result = state["verification_result"]
-        assessment_result = self.assessment_agent.assess(reasoning_result, verification_result)
+        transaction_analysis = state.get("transaction_analysis")
+        assessment_result = self.assessment_agent.assess(reasoning_result, verification_result, transaction_analysis)
         
         workflow_log = state.get("workflow_log", [])
         workflow_log.append({"step": "assessment", "result": assessment_result})
@@ -139,14 +160,29 @@ class KYCOrchestrator:
     def _route_after_verification(self, state: KYCState) -> str:
         """
         Routing logic after verification node.
-        If verification fails, route back to extraction (cyclic loop).
+        Handles ERROR, FAILED, and successful verification states appropriately.
+        If verification passes and transaction_csv_data exists, route to transaction analysis.
         Otherwise, continue to reasoning.
         """
-        verification_status = state.get("verification_result", {}).get("verification_status")
+        verification_result = state.get("verification_result", {})
+        verification_status = verification_result.get("verification_status", "").upper()
         
+        # Handle ERROR status - verification service failed (503, 429, etc.)
+        if verification_status == "ERROR":
+            logger.error("❌ Verification ERROR - Service unavailable. Routing to reasoning with error context.")
+            # Continue to reasoning - it will handle error status and escalate/reject as needed
+            return "reason"
+        
+        # Handle FAILED status - identity not found in government DB
         if verification_status == "FAILED":
-            logger.info("🔄 Verification FAILED - Routing back to extraction for retry")
-            return "extract"
+            logger.warning("⚠️ Verification FAILED - Identity not found. Routing to reasoning.")
+            # Continue to reasoning - this is a legitimate failure that needs risk assessment
+            return "reason"
+        
+        # Verification passed (VERIFIED, PARTIAL, FLAGGED) - check for transaction data
+        if state.get("transaction_csv_data"):
+            logger.info("✅ Verification passed with transaction data - Routing to transaction analysis")
+            return "analyze_transactions"
         
         logger.info("✅ Verification passed - Routing to reasoning")
         return "reason"
@@ -174,6 +210,7 @@ class KYCOrchestrator:
         # Add all nodes to the workflow
         workflow.add_node("extract", self.extract_node)
         workflow.add_node("verify", self.verify_node)
+        workflow.add_node("analyze_transactions", self.analyze_transactions_node)
         workflow.add_node("reason", self.reason_node)
         workflow.add_node("assess", self.assess_node)
         workflow.add_node("decide", self.decide_node)
@@ -185,6 +222,9 @@ class KYCOrchestrator:
         
         # Replace linear edges with conditional edges
         workflow.add_conditional_edges("verify", self._route_after_verification)
+        
+        # Add edge from transaction analysis to reasoning
+        workflow.add_edge("analyze_transactions", "reason")
         
         workflow.add_edge("reason", "assess")
         workflow.add_edge("assess", "decide")
@@ -217,6 +257,8 @@ class KYCOrchestrator:
             # Initialize the state and invoke the LangGraph StateGraph
             initial_state: KYCState = {
                 "document": document,
+                "transaction_csv_data": document.get("transaction_csv_data"),
+                "transaction_analysis": {},
                 "workflow_log": []
             }
             
@@ -253,6 +295,7 @@ class KYCOrchestrator:
                 "audit_trail": decision_result.get('audit_trail', {}),
                 "workflow_log": workflow_log,
                 "extracted_data": extracted_data_with_confidence,
+                "transaction_analysis": final_state.get("transaction_analysis"),
                 "timestamp": decision_result.get('timestamp')
             }
             

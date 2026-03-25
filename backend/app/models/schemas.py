@@ -11,6 +11,8 @@ class DocumentUpload(BaseModel):
     document_type: str = Field(..., description="Type of document (PAN, PASSPORT, DRIVERS_LICENSE)")
     extracted_fields: Dict[str, Any] = Field(..., description="Extracted document fields")
     metadata: Optional[Dict[str, Any]] = Field(default=None, description="Document metadata")
+    transaction_csv_data: Optional[str] = Field(default=None, description="Optional CSV transaction data for AML analysis")
+    analysis_type: str = Field(default="KYC", description="Type of analysis: KYC or AML")
     
     class Config:
         json_schema_extra = {

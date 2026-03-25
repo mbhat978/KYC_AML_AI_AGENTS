@@ -9,9 +9,17 @@ export const api = {
   /**
    * Upload a file (PDF, JPG, PNG) for KYC processing
    */
-  async uploadFile(file: File): Promise<ProcessingResponse> {
+  async uploadFile(file: File, transactionCsvData?: string, analysisType?: string): Promise<ProcessingResponse> {
     const formData = new FormData();
     formData.append('file', file);
+    
+    // Add optional fields for AML processing
+    if (transactionCsvData) {
+      formData.append('transaction_csv_data', transactionCsvData);
+    }
+    if (analysisType) {
+      formData.append('analysis_type', analysisType);
+    }
 
     const response = await fetch(`${API_BASE_URL}/kyc/upload`, {
       method: 'POST',
@@ -28,13 +36,25 @@ export const api = {
   /**
    * Initiate KYC document processing (JSON format)
    */
-  async processDocument(document: DocumentData): Promise<ProcessingResponse> {
+  async processDocument(document: DocumentData, transactionCsvData?: string, analysisType?: string): Promise<ProcessingResponse> {
+    const payload: any = {
+      ...document,
+    };
+    
+    // Add optional fields for AML processing
+    if (transactionCsvData) {
+      payload.transaction_csv_data = transactionCsvData;
+    }
+    if (analysisType) {
+      payload.analysis_type = analysisType;
+    }
+
     const response = await fetch(`${API_BASE_URL}/kyc/process`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(document),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {

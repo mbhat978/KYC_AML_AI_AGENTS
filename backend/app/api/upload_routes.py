@@ -2,7 +2,7 @@
 File Upload Routes for KYC Document Processing
 Handles PDF, JPG, PNG uploads and extracts text for processing
 """
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from typing import Optional
 import uuid
 from loguru import logger
@@ -143,15 +143,22 @@ def parse_document_data(text: str, file_type: str) -> dict:
 @router.post("/kyc/upload", response_model=ProcessingResponse)
 async def upload_document(
     file: UploadFile = File(...),
-    document_type: Optional[str] = None
+    document_type: Optional[str] = Form(None),
+    transaction_csv_data: Optional[str] = Form(None),
+    analysis_type: Optional[str] = Form(None)
 ):
     """
     Upload and process a KYC document (PDF, JPG, PNG)
     Extracts text and initiates KYC processing
+    Optionally accepts transaction CSV data for AML analysis
     """
     try:
         session_id = str(uuid.uuid4())
         logger.info(f"File upload for session {session_id}: {file.filename} ({file.content_type})")
+        
+        # Log if transaction data is provided
+        if transaction_csv_data:
+            logger.info(f"Transaction CSV data provided for session {session_id} (length: {len(transaction_csv_data)} chars)")
         
         # Read file content
         file_content = await file.read()
@@ -193,6 +200,11 @@ async def upload_document(
                 "session_id": session_id
             }
         }
+        
+        # Include transaction CSV data if provided (for AML analysis)
+        if transaction_csv_data:
+            document["transaction_csv_data"] = transaction_csv_data
+            logger.info(f"✅ Transaction data included in document for session {session_id}")
         
         # Store document for processing
         kyc_service.store_document(session_id, document)
