@@ -215,6 +215,18 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
+.action-btn.disabled {
+  background: #e5e7eb;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.action-btn.disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .btn-icon {
   font-size: 1.2rem;
 }

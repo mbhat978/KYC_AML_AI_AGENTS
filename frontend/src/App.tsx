@@ -8,6 +8,7 @@ import { Dashboard } from './components/Dashboard';
 import { api } from './services/api';
 import { sseClient } from './services/sse';
 import type { StreamEvent, FinalDecision, AgentEvent } from './types';
+import jsPDF from 'jspdf';
 
 type ViewMode = 'upload' | 'dashboard' | 'live-feed';
 type TabMode = 'KYC' | 'AML';
@@ -180,6 +181,219 @@ function App() {
     return { emoji, color, decision };
   };
 
+  const handleExportReport = () => {
+    if (!finalDecision) {
+      alert('No report data available. Please process a transaction first.');
+      return;
+    }
+
+    try {
+      // Create new PDF document
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      let yPos = 20;
+
+      // Helper function to add text with word wrap
+      const addText = (text: string, x: number, fontSize: number = 10, maxWidth?: number, isBold: boolean = false) => {
+        doc.setFontSize(fontSize);
+        if (isBold) {
+          doc.setFont('helvetica', 'bold');
+        } else {
+          doc.setFont('helvetica', 'normal');
+        }
+        
+        if (maxWidth) {
+          const lines = doc.splitTextToSize(text, maxWidth);
+          doc.text(lines, x, yPos);
+          yPos += (lines.length * fontSize * 0.5) + 2;
+        } else {
+          doc.text(text, x, yPos);
+          yPos += fontSize * 0.5 + 2;
+        }
+      };
+
+      // Check if we need a new page
+      const checkNewPage = (requiredSpace: number = 30) => {
+        if (yPos > pageHeight - requiredSpace) {
+          doc.addPage();
+          yPos = 20;
+        }
+      };
+
+      // Header
+      doc.setFillColor(99, 102, 241);
+      doc.rect(0, 0, pageWidth, 40, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('AML TRANSACTION MONITORING REPORT', pageWidth / 2, 20, { align: 'center' });
+      doc.setFontSize(10);
+      doc.text('AI-Powered Risk Assessment & Compliance', pageWidth / 2, 30, { align: 'center' });
+      
+      yPos = 55;
+      doc.setTextColor(0, 0, 0);
+
+      // Report Metadata
+      doc.setFillColor(240, 240, 240);
+      doc.rect(15, yPos - 5, pageWidth - 30, 25, 'F');
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`Report Generated: ${new Date().toLocaleString()}`, 20, yPos);
+      yPos += 8;
+      doc.text(`Session ID: ${sessionId}`, 20, yPos);
+      yPos += 8;
+      doc.text(`Report Version: 1.0`, 20, yPos);
+      yPos += 15;
+
+      // Executive Summary
+      checkNewPage(50);
+      doc.setFillColor(220, 252, 231);
+      if (finalDecision.decision === 'REJECT') {
+        doc.setFillColor(254, 226, 226);
+      } else if (finalDecision.decision === 'ESCALATE') {
+        doc.setFillColor(254, 243, 199);
+      }
+      doc.rect(15, yPos - 5, pageWidth - 30, 12, 'F');
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('EXECUTIVE SUMMARY', 20, yPos + 3);
+      yPos += 18;
+
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`Final Decision: ${finalDecision.decision}`, 20, yPos);
+      yPos += 8;
+      doc.text(`Risk Category: ${finalDecision.risk_category}`, 20, yPos);
+      yPos += 8;
+      doc.text(`Risk Score: ${finalDecision.risk_score.toFixed(2)}`, 20, yPos);
+      yPos += 8;
+      doc.text(`Confidence: ${((finalDecision.confidence ?? 0) * 100).toFixed(0)}%`, 20, yPos);
+      yPos += 12;
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      addText('Recommendation:', 20, 10, undefined, true);
+      addText(finalDecision.recommendation, 20, 10, pageWidth - 40);
+      yPos += 5;
+
+      // Transaction Analysis
+      if (finalDecision.transaction_analysis) {
+        checkNewPage(80);
+        doc.setFillColor(239, 246, 255);
+        doc.rect(15, yPos - 5, pageWidth - 30, 12, 'F');
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('TRANSACTION ANALYSIS', 20, yPos + 3);
+        yPos += 18;
+
+        doc.setFontSize(11);
+        doc.text(`Suspicious Activity: ${finalDecision.transaction_analysis.suspicious_activity ? 'YES' : 'NO'}`, 20, yPos);
+        yPos += 8;
+        doc.text(`AML Risk Score: ${finalDecision.transaction_analysis.risk_score.toFixed(1)}/10.0`, 20, yPos);
+        yPos += 8;
+        doc.text(`Risk Level: ${finalDecision.transaction_analysis.risk_level}`, 20, yPos);
+        yPos += 12;
+
+        // AML Flags
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text('AML FLAGS DETECTED:', 20, yPos);
+        yPos += 8;
+        
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        const flags = finalDecision.transaction_analysis.aml_flags;
+        if (flags) {
+          if (flags.sanctions_hit) { doc.text('• Sanctions List Match', 25, yPos); yPos += 6; }
+          if (flags.pep_match) { doc.text('• Politically Exposed Person (PEP)', 25, yPos); yPos += 6; }
+          if (flags.high_velocity) { doc.text('• High Velocity Transactions', 25, yPos); yPos += 6; }
+          if (flags.structuring_detected) { doc.text('• Structuring Pattern Detected', 25, yPos); yPos += 6; }
+          if (flags.smurfing_detected) { doc.text('• Smurfing Activity Detected', 25, yPos); yPos += 6; }
+          if (flags.unusual_amount) { doc.text('• Unusual Transaction Amount', 25, yPos); yPos += 6; }
+          
+          if (!Object.values(flags).some(v => v)) {
+            doc.text('• No AML flags detected', 25, yPos);
+            yPos += 6;
+          }
+        }
+        yPos += 6;
+
+        // Transaction Summary
+        if (finalDecision.transaction_analysis.summary) {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          doc.text('Summary:', 20, yPos);
+          yPos += 6;
+          doc.setFont('helvetica', 'normal');
+          addText(finalDecision.transaction_analysis.summary, 20, 10, pageWidth - 40);
+          yPos += 5;
+        }
+      }
+
+      // Detailed Explanation
+      checkNewPage(60);
+      doc.setFillColor(254, 252, 232);
+      doc.rect(15, yPos - 5, pageWidth - 30, 12, 'F');
+      doc.setFontSize(16);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DETAILED EXPLANATION', 20, yPos + 3);
+      yPos += 18;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      addText(finalDecision.explanation, 20, 10, pageWidth - 40);
+      yPos += 5;
+
+      // Identity Information
+      if (finalDecision.extracted_data) {
+        checkNewPage(60);
+        doc.setFillColor(240, 240, 240);
+        doc.rect(15, yPos - 5, pageWidth - 30, 12, 'F');
+        doc.setFontSize(16);
+        doc.setFont('helvetica', 'bold');
+        doc.text('IDENTITY INFORMATION', 20, yPos + 3);
+        yPos += 18;
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        Object.entries(finalDecision.extracted_data).forEach(([key, value]) => {
+          checkNewPage();
+          let displayValue = String(value ?? 'N/A');
+          if (key.toLowerCase().includes('confidence') && typeof value === 'number' && value <= 1) {
+            displayValue = `${(value * 100).toFixed(0)}%`;
+          }
+          doc.text(`${key.replace(/_/g, ' ').toUpperCase()}: ${displayValue}`, 20, yPos);
+          yPos += 6;
+        });
+        yPos += 5;
+      }
+
+      // Footer
+      const timestamp = new Date().toLocaleString();
+      const pageCount = (doc as any).internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(128, 128, 128);
+        doc.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+        doc.text(`Generated: ${timestamp}`, 20, pageHeight - 10);
+        doc.text(`Confidential`, pageWidth - 20, pageHeight - 10, { align: 'right' });
+      }
+
+      // Save the PDF
+      const fileName = `AML_Report_${sessionId.substring(0, 8)}_${new Date().toISOString().split('T')[0]}.pdf`;
+      doc.save(fileName);
+
+      // Show success message
+      alert(`✅ Report exported successfully!\n\nFile: ${fileName}\n\nThe PDF report has been downloaded to your device.`);
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('❌ Error generating PDF report. Please try again.');
+    }
+  };
+
   const stats = getDecisionStats();
 
   return (
@@ -327,110 +541,174 @@ function App() {
                     <p className="monitoring-subtitle">Real-time AML surveillance & compliance tracking</p>
                   </div>
                   <div className="header-actions">
-                    <button className="action-btn primary">
+                    <button 
+                      onClick={handleExportReport}
+                      disabled={!finalDecision}
+                      className={`action-btn ${finalDecision ? 'primary' : 'disabled'}`}
+                      title={finalDecision ? 'Export comprehensive AML report' : 'No data available to export'}
+                    >
                       <span className="btn-icon">📥</span>
                       Export Report
-                    </button>
-                    <button className="action-btn secondary">
-                      <span className="btn-icon">⚙️</span>
-                      Settings
                     </button>
                   </div>
                 </div>
 
                 {/* Stats Dashboard */}
-                <div className="stats-grid">
-                  <div className="stat-card-modern primary">
-                    <div className="stat-icon-wrapper">
-                      <div className="stat-icon">🔔</div>
+                {finalDecision && finalDecision.transaction_analysis ? (
+                  <div className="stats-grid">
+                    {/* Active Alerts - Based on Suspicious Activity */}
+                    <div className={`stat-card-modern ${finalDecision.transaction_analysis.suspicious_activity ? 'warning' : 'primary'}`}>
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">{finalDecision.transaction_analysis.suspicious_activity ? '�' : '�🔔'}</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">{finalDecision.transaction_analysis.suspicious_activity ? '1' : '0'}</div>
+                        <div className="stat-label">Active Alerts</div>
+                        <div className={`stat-trend ${finalDecision.transaction_analysis.suspicious_activity ? 'negative' : 'neutral'}`}>
+                          <span className="trend-text">{finalDecision.transaction_analysis.suspicious_activity ? '⚠️ Alert triggered' : 'No active alerts'}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="stat-info">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Active Alerts</div>
-                      <div className="stat-trend neutral">
-                        <span className="trend-text">No active alerts</span>
+
+                    {/* Flagged Transactions - Count AML flags */}
+                    <div className="stat-card-modern warning">
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">⚠️</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">
+                          {Object.values(finalDecision.transaction_analysis.aml_flags || {}).filter(Boolean).length}
+                        </div>
+                        <div className="stat-label">AML Flags Detected</div>
+                        <div className="stat-trend negative">
+                          <span className="trend-text">
+                            {finalDecision.transaction_analysis.aml_flags?.sanctions_hit && '🚫 Sanctions | '}
+                            {finalDecision.transaction_analysis.aml_flags?.pep_match && '👤 PEP | '}
+                            {finalDecision.transaction_analysis.aml_flags?.high_velocity && '⚡ High Velocity | '}
+                            {finalDecision.transaction_analysis.aml_flags?.structuring_detected && '📊 Structuring | '}
+                            {finalDecision.transaction_analysis.aml_flags?.smurfing_detected && '🔄 Smurfing | '}
+                            {finalDecision.transaction_analysis.aml_flags?.unusual_amount && '💰 Unusual Amount'}
+                            {Object.values(finalDecision.transaction_analysis.aml_flags || {}).every(v => !v) && 'No flags'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* AML Risk Level */}
+                    <div className={`stat-card-modern ${
+                      finalDecision.transaction_analysis.risk_level === 'HIGH' ? 'danger' : 
+                      finalDecision.transaction_analysis.risk_level === 'MEDIUM' ? 'warning' : 'success'
+                    }`}>
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">
+                          {finalDecision.transaction_analysis.risk_level === 'HIGH' ? '🔴' : 
+                           finalDecision.transaction_analysis.risk_level === 'MEDIUM' ? '🟡' : '🟢'}
+                        </div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">{finalDecision.transaction_analysis.risk_level}</div>
+                        <div className="stat-label">AML Risk Level</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Score: {finalDecision.transaction_analysis.risk_score.toFixed(1)}/10.0</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Overall Decision */}
+                    <div className={`stat-card-modern ${
+                      finalDecision.decision === 'APPROVE' ? 'success' : 
+                      finalDecision.decision === 'REJECT' ? 'danger' : 'warning'
+                    }`}>
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">
+                          {finalDecision.decision === 'APPROVE' ? '✅' : 
+                           finalDecision.decision === 'REJECT' ? '❌' : '⚠️'}
+                        </div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">{finalDecision.decision}</div>
+                        <div className="stat-label">Final Decision</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Confidence: {((finalDecision.confidence ?? 0) * 100).toFixed(0)}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-                  <div className="stat-card-modern warning">
-                    <div className="stat-icon-wrapper">
-                      <div className="stat-icon">⚠️</div>
+                ) : (
+                  <div className="stats-grid">
+                    <div className="stat-card-modern primary">
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">�</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">0</div>
+                        <div className="stat-label">Active Alerts</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Awaiting transaction data</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="stat-info">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Flagged Transactions</div>
-                      <div className="stat-trend neutral">
-                        <span className="trend-text">All clear</span>
+
+                    <div className="stat-card-modern warning">
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">⚠️</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">--</div>
+                        <div className="stat-label">AML Flags</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Awaiting transaction data</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="stat-card-modern success">
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">📊</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">--</div>
+                        <div className="stat-label">Risk Level</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Awaiting transaction data</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="stat-card-modern info">
+                      <div className="stat-icon-wrapper">
+                        <div className="stat-icon">⚖️</div>
+                      </div>
+                      <div className="stat-info">
+                        <div className="stat-value">--</div>
+                        <div className="stat-label">Decision</div>
+                        <div className="stat-trend neutral">
+                          <span className="trend-text">Awaiting transaction data</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+                )}
 
-                  <div className="stat-card-modern success">
-                    <div className="stat-icon-wrapper">
-                      <div className="stat-icon">✅</div>
-                    </div>
-                    <div className="stat-info">
-                      <div className="stat-value">0</div>
-                      <div className="stat-label">Cleared Today</div>
-                      <div className="stat-trend neutral">
-                        <span className="trend-text">Ready to monitor</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="stat-card-modern info">
-                    <div className="stat-icon-wrapper">
-                      <div className="stat-icon">📊</div>
-                    </div>
-                    <div className="stat-info">
-                      <div className="stat-value">--</div>
-                      <div className="stat-label">Detection Rate</div>
-                      <div className="stat-trend neutral">
-                        <span className="trend-text">Awaiting data</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Filter & Search Section */}
-                <div className="filter-section">
-                  <div className="search-wrapper">
-                    <span className="search-icon">🔍</span>
-                    <input 
-                      type="text" 
-                      className="search-input" 
-                      placeholder="Search transactions, accounts, or alerts..."
-                    />
-                  </div>
-                  <div className="filter-buttons">
-                    <button className="filter-btn active">All</button>
-                    <button className="filter-btn">High Risk</button>
-                    <button className="filter-btn">Medium Risk</button>
-                    <button className="filter-btn">Low Risk</button>
-                    <button className="filter-btn">Cleared</button>
-                  </div>
-                </div>
-
-                {/* Transaction Feed - Empty State */}
-                <div className="transaction-feed">
-                  <div className="feed-header">
-                    <h2>Recent Activity</h2>
-                    <div className="live-indicator">
-                      <span className="live-dot"></span>
-                      <span>Live</span>
-                    </div>
-                  </div>
-
-                  {/* Empty State */}
-                  <div className="empty-state">
-                    <div className="empty-state-icon">📊</div>
-                    <h3 className="empty-state-title">No Transactions to Display</h3>
-                    <p className="empty-state-description">
-                      Transaction monitoring system is active and ready. Transactions will appear here once data is received.
+                {/* Transaction Analysis Summary */}
+                {finalDecision && finalDecision.transaction_analysis && (
+                  <div className="modern-card bg-white border border-gray-200 rounded-xl p-6 mt-6 shadow-lg">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                      <span>📋</span>
+                      Transaction Analysis Summary
+                    </h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      {finalDecision.transaction_analysis.summary}
                     </p>
                   </div>
-                </div>
+                )}
+
+                {/* Full Decision Details */}
+                {finalDecision && (
+                  <div className="mt-6">
+                    <Dashboard decision={finalDecision} />
+                  </div>
+                )}
               </div>
             )}
           </div>
