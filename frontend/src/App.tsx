@@ -517,7 +517,7 @@ function App() {
             {activeTab === 'KYC' ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div className="lg:col-span-2">
-                  <Dashboard decision={finalDecision} />
+                  <Dashboard decision={finalDecision} onDecisionUpdate={setFinalDecision} />
                 </div>
                 <div>
                   {finalDecision ? (
@@ -706,7 +706,7 @@ function App() {
                 {/* Full Decision Details */}
                 {finalDecision && (
                   <div className="mt-6">
-                    <Dashboard decision={finalDecision} />
+                    <Dashboard decision={finalDecision} onDecisionUpdate={setFinalDecision} />
                   </div>
                 )}
               </div>

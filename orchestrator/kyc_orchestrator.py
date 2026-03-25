@@ -6,6 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from typing import TypedDict, Dict, Any, Optional
 from loguru import logger
+from datetime import datetime
 from agents import (
     ExtractionAgent,
     VerificationAgent,
@@ -238,6 +239,67 @@ class KYCOrchestrator:
             checkpointer=memory,
             interrupt_before=["human_review"]
         )
+
+    def resume_graph(self, thread_id: str, human_decision: str) -> dict:
+        """Resumes a paused graph with the human's manual decision."""
+        from datetime import datetime
+        
+        config = {"configurable": {"thread_id": thread_id}}
+        
+        logger.info(f"🔄 Resuming graph for thread {thread_id} with human decision: {human_decision}")
+        
+        # Get the current state to extract assessment results
+        current_state = self.graph.get_state(config)
+        assessment_result = current_state.values.get("assessment_result", {})
+        
+        # Create a complete decision_result object with all required fields
+        decision_result = {
+            "decision": human_decision,
+            "risk_score": assessment_result.get("risk_score", 0.0),
+            "risk_category": assessment_result.get("risk_category", "UNKNOWN"),
+            "confidence": 1.0,  # Human decisions have 100% confidence
+            "explanation": f"Manual human override: {human_decision}. Original assessment overridden by compliance officer.",
+            "recommendation": f"Human reviewer manually set decision to: {human_decision}",
+            "audit_trail": {
+                "decision_type": "HUMAN_OVERRIDE",
+                "override_decision": human_decision,
+                "original_assessment": assessment_result,
+                "override_timestamp": datetime.now().isoformat()
+            },
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        # Update the state with the human's override
+        # Use as_node="human_review" to indicate this came from the human review step
+        self.graph.update_state(
+            config, 
+            {"decision_result": decision_result},
+            as_node="human_review"
+        )
+        
+        logger.info(f"✅ State updated with decision: {human_decision}")
+        
+        # Resume the graph by passing None as the input
+        # This will continue from the interrupt point (human_review) and proceed to END
+        final_state = self.graph.invoke(None, config=config)
+        
+        logger.info(f"✅ Graph execution completed for thread {thread_id}")
+        
+        # Return the complete final state in the expected format
+        return {
+            "decision": final_state.get("decision_result", {}).get("decision"),
+            "risk_score": final_state.get("decision_result", {}).get("risk_score"),
+            "risk_category": final_state.get("decision_result", {}).get("risk_category"),
+            "confidence": final_state.get("decision_result", {}).get("confidence"),
+            "explanation": final_state.get("decision_result", {}).get("explanation"),
+            "recommendation": final_state.get("decision_result", {}).get("recommendation"),
+            "audit_trail": final_state.get("decision_result", {}).get("audit_trail"),
+            "extracted_data": final_state.get("extracted_data", {}),
+            "verification_result": final_state.get("verification_result", {}),
+            "assessment_result": final_state.get("assessment_result", {}),
+            "workflow_log": final_state.get("workflow_log", []),
+            "timestamp": final_state.get("decision_result", {}).get("timestamp")
+        }
     
     def process_document(self, document: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -263,13 +325,19 @@ class KYCOrchestrator:
             }
             
             # Configure with thread ID for checkpointer support
-            config = {"configurable": {"thread_id": "1"}}  # In production, this would be the session ID
+            # Use session_id from document metadata as the unique thread_id
+            session_id = document.get("metadata", {}).get("session_id", "1")
+            config = {"configurable": {"thread_id": session_id}}
+            logger.info(f"🚀 Starting graph execution with thread_id: {session_id}")
+            
             final_state = self.graph.invoke(initial_state, config=config)
+            
+            logger.info(f"📊 Graph execution paused or completed for thread_id: {session_id}")
             
             # Extract results from final state
             extraction_result = final_state.get("extraction_result", {})
             extracted_data = final_state.get("extracted_data", {})
-            decision_result = final_state.get("decision_result", {})
+            decision_result = final_state.get("decision_result")
             workflow_log = final_state.get("workflow_log", [])
             
             # Handle extraction errors
@@ -283,6 +351,26 @@ class KYCOrchestrator:
                 **extracted_data_clean,
                 "extraction_confidence": extraction_result.get('confidence', 0.85)
             }
+            
+            # Check if the graph was interrupted (paused for human review)
+            if decision_result is None:
+                # Graph was interrupted - return status indicating human review needed
+                logger.info("⏸️ Workflow paused for human review")
+                return {
+                    "decision": "ESCALATE",
+                    "risk_score": final_state.get("assessment_result", {}).get("risk_score", 0.0),
+                    "risk_category": final_state.get("assessment_result", {}).get("risk_category", "UNKNOWN"),
+                    "confidence": 0.0,
+                    "explanation": "Workflow paused pending human review",
+                    "recommendation": "Human review required before final decision",
+                    "audit_trail": {"status": "awaiting_human_review", "session_id": session_id},
+                    "workflow_log": workflow_log,
+                    "extracted_data": extracted_data_with_confidence,
+                    "transaction_analysis": final_state.get("transaction_analysis"),
+                    "status": "PAUSED_FOR_REVIEW",
+                    "thread_id": session_id,
+                    "timestamp": datetime.now().isoformat()
+                }
             
             # Compile final response in the same format as before for backward compatibility
             final_response = {

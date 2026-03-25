@@ -85,3 +85,16 @@ export const api = {
     return response.json();
   },
 };
+
+/**
+ * Resume processing after human override decision
+ */
+export const resumeProcessing = async (threadId: string, decision: 'APPROVE' | 'REJECT') => {
+  const response = await fetch(`${API_BASE_URL}/upload/resume`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ thread_id: threadId, decision })
+  });
+  if (!response.ok) throw new Error('Failed to resume processing');
+  return response.json();
+};

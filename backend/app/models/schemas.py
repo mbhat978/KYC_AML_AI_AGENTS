@@ -78,3 +78,8 @@ class ErrorResponse(BaseModel):
     error: str
     detail: Optional[str] = None
     session_id: Optional[str] = None
+
+
+class HumanReviewPayload(BaseModel):
+    thread_id: str = "1"
+    decision: str = Field(description="Must be 'APPROVE' or 'REJECT'")

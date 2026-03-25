@@ -3,6 +3,7 @@ File Upload Routes for KYC Document Processing
 Handles PDF, JPG, PNG uploads and extracts text for processing
 """
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
+from fastapi.responses import JSONResponse
 from typing import Optional
 import uuid
 from loguru import logger
@@ -15,7 +16,7 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from utils.pdf_converter import PDFConverter
-from backend.app.models.schemas import ProcessingResponse
+from backend.app.models.schemas import ProcessingResponse, HumanReviewPayload
 from backend.app.services.kyc_service import kyc_service
 
 router = APIRouter()
@@ -139,6 +140,15 @@ def parse_document_data(text: str, file_type: str) -> dict:
     
     return extracted_fields
 
+
+
+@router.post("/upload/resume")
+async def resume_processing(payload: HumanReviewPayload):
+    try:
+        result = kyc_service.orchestrator.resume_graph(payload.thread_id, payload.decision)
+        return JSONResponse(content={"status": "success", "result": result})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/kyc/upload", response_model=ProcessingResponse)
 async def upload_document(
