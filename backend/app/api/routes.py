@@ -1,10 +1,13 @@
 """API Routes for KYC/AML System"""
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 from sse_starlette.sse import EventSourceResponse
 import uuid
 from loguru import logger
 
 from backend.app.models.schemas import DocumentUpload, ProcessingResponse
+from backend.app.models.db_models import VerificationRecord
+from backend.app.database import get_db
 from backend.app.services.kyc_service import kyc_service
 
 router = APIRouter()
@@ -79,6 +82,57 @@ async def get_processing_status(session_id: str):
     except Exception as e:
         logger.error(f"Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kyc/audit/{session_id}")
+async def get_audit_history(session_id: str, db: Session = Depends(get_db)):
+    """
+    Fetch audit history for a specific KYC session.
+    
+    Args:
+        session_id: The unique session identifier
+        db: Database session (dependency injection)
+        
+    Returns:
+        List of audit records ordered by timestamp
+    """
+    try:
+        logger.info(f"Fetching audit history for session: {session_id}")
+        
+        # Query all verification records for this session, ordered by timestamp
+        records = db.query(VerificationRecord)\
+            .filter(VerificationRecord.session_id == session_id)\
+            .order_by(VerificationRecord.timestamp.asc())\
+            .all()
+        
+        # Convert to dict format for JSON response
+        audit_history = []
+        for record in records:
+            audit_history.append({
+                "id": record.id,
+                "session_id": record.session_id,
+                "timestamp": record.timestamp.isoformat(),
+                "status": record.status,
+                "customer_name": record.customer_name,
+                "document_type": record.document_type,
+                "risk_score": record.risk_score,
+                "details": record.details
+            })
+        
+        logger.info(f"Found {len(audit_history)} audit records for session {session_id}")
+        
+        return {
+            "session_id": session_id,
+            "record_count": len(audit_history),
+            "audit_history": audit_history
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch audit history: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch audit history: {str(e)}"
+        )
 
 
 @router.get("/documents/samples")

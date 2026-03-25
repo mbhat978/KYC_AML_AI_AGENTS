@@ -23,5 +23,8 @@ loguru==0.7.2
 # PDF Processing - NEW for Phase 1
 PyMuPDF==1.23.8
 
+# Database - Phase 7 Audit Ledger
+sqlalchemy==2.0.36
+
 # Note: Core KYC dependencies are in root requirements.txt
 # The backend will import from parent directories

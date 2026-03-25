@@ -14,6 +14,13 @@ from backend.app.api import routes
 from backend.app.api import upload_routes
 from backend.app.middleware.cors import get_cors_config
 
+# Database imports - Phase 7 Audit Ledger
+from app.database import engine, Base
+import app.models.db_models  # Import to register models
+
+# Initialize database tables
+Base.metadata.create_all(bind=engine)
+
 # Initialize FastAPI app
 app = FastAPI(
     title="KYC/AML Multi-Agent System API",

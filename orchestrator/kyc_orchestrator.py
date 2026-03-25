@@ -16,6 +16,7 @@ from agents import (
 )
 from agents.transaction_agent import TransactionAnalysisAgent
 from config.settings import settings
+from backend.app.services.audit_service import log_audit_event
 
 
 class KYCState(TypedDict):
@@ -144,6 +145,33 @@ class KYCOrchestrator:
         
         logger.info(f"Final Decision: {decision_result['decision']}")
         
+        # Log AI decision to audit database
+        try:
+            session_id = state.get("document", {}).get("metadata", {}).get("session_id", "unknown")
+            customer_name = state.get("extracted_data", {}).get("name", "Unknown")
+            document_type = state.get("extracted_data", {}).get("document_type", None)
+            risk_score = assessment_result.get("risk_score", None)
+            
+            audit_details = {
+                "reasoning": reasoning_result.get("reasoning_conclusion", ""),
+                "risk_score": risk_score,
+                "confidence": decision_result.get("confidence", None),
+                "decision_type": "AI",
+                "explanation": decision_result.get("explanation", "")
+            }
+            
+            log_audit_event(
+                session_id=session_id,
+                status=f"AI_{decision_result['decision']}",
+                customer_name=customer_name,
+                document_type=document_type,
+                risk_score=risk_score,
+                details=audit_details
+            )
+            logger.info(f"✅ AI decision logged to audit database")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to log AI decision to audit: {str(e)}")
+        
         return {
             "decision_result": decision_result,
             "workflow_log": workflow_log
@@ -251,6 +279,33 @@ class KYCOrchestrator:
         # Get the current state to extract assessment results
         current_state = self.graph.get_state(config)
         assessment_result = current_state.values.get("assessment_result", {})
+        extracted_data = current_state.values.get("extracted_data", {})
+        
+        # Log human override to audit database
+        try:
+            customer_name = extracted_data.get("name", "Unknown")
+            document_type = extracted_data.get("document_type", None)
+            risk_score = assessment_result.get("risk_score", None)
+            
+            audit_details = {
+                "human_decision": human_decision,
+                "original_ai_decision": current_state.values.get("decision_result", {}).get("decision", None),
+                "risk_score": risk_score,
+                "decision_type": "HUMAN_OVERRIDE",
+                "override_timestamp": datetime.now().isoformat()
+            }
+            
+            log_audit_event(
+                session_id=thread_id,
+                status=f"HUMAN_{human_decision}",
+                customer_name=customer_name,
+                document_type=document_type,
+                risk_score=risk_score,
+                details=audit_details
+            )
+            logger.info(f"✅ Human override logged to audit database")
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to log human override to audit: {str(e)}")
         
         # Create a complete decision_result object with all required fields
         decision_result = {
