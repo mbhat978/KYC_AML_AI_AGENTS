@@ -128,7 +128,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileUpload, isProcessi
             <p className="text-gray-600 text-sm mt-2 font-medium">or drag and drop</p>
           </div>
           
-          <p className="text-xs text-gray-500 mt-2">Supports PDF, JPG, PNG, and JSON formats</p>
+          <p className="text-xs text-gray-500 mt-2">Supports PDF, JPG, PNG formats</p>
           
           {fileName && (
             <div className="mt-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 animate-[slideIn_0.3s_ease-out] shadow-sm">

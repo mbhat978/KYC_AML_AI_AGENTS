@@ -18,6 +18,9 @@ export default function AuditHistory() {
   const [auditLogs, setAuditLogs] = useState<AuditRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [riskFilter, setRiskFilter] = useState<string>('all');
@@ -122,6 +125,28 @@ export default function AuditHistory() {
     return filtered;
   }, [auditLogs, searchTerm, statusFilter, riskFilter, sortField, sortOrder]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredLogs.length / recordsPerPage);
+  
+  const paginatedLogs = useMemo(() => {
+    const startIndex = (currentPage - 1) * recordsPerPage;
+    const endIndex = startIndex + recordsPerPage;
+    return filteredLogs.slice(startIndex, endIndex);
+  }, [filteredLogs, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, riskFilter]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handlePrevious = () => setCurrentPage(prev => Math.max(prev - 1, 1));
+  const handleNext = () => setCurrentPage(prev => Math.min(prev + 1, totalPages));
+
   const handleSort = (field: SortField) => {
     if (sortField === field) setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     else { setSortField(field); setSortOrder('desc'); }
@@ -218,7 +243,11 @@ export default function AuditHistory() {
               </select>
               <div className="ml-auto text-sm text-gray-600 flex items-center gap-2">
                 <span className="font-semibold">Showing:</span>
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-bold">{filteredLogs.length}</span>
+                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full font-bold">
+                  {filteredLogs.length > 0 
+                    ? `${(currentPage - 1) * recordsPerPage + 1}-${Math.min(currentPage * recordsPerPage, filteredLogs.length)}`
+                    : '0'}
+                </span>
                 <span>of {auditLogs.length} records</span>
               </div>
             </div>
@@ -246,7 +275,7 @@ export default function AuditHistory() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLogs.length === 0 ? (
+                {paginatedLogs.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
@@ -257,7 +286,7 @@ export default function AuditHistory() {
                     </td>
                   </tr>
                 ) : (
-                  filteredLogs.map((log) => (
+                  paginatedLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-blue-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">{formatTimestamp(log.timestamp)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600 bg-gray-50">{log.session_id.substring(0, 8)}</td>
@@ -276,6 +305,60 @@ export default function AuditHistory() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {filteredLogs.length > 0 && totalPages > 1 && (
+            <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing <span className="font-bold text-blue-600">{(currentPage - 1) * recordsPerPage + 1}</span> - <span className="font-bold text-blue-600">{Math.min(currentPage * recordsPerPage, filteredLogs.length)}</span> of <span className="font-bold text-gray-900">{filteredLogs.length}</span> records
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handlePrevious}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300 transition-all font-medium shadow-sm"
+                  >
+                    ← Previous
+                  </button>
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                      let pageNumber;
+                      if (totalPages <= 7) {
+                        pageNumber = i + 1;
+                      } else if (currentPage <= 4) {
+                        pageNumber = i + 1;
+                      } else if (currentPage >= totalPages - 3) {
+                        pageNumber = totalPages - 6 + i;
+                      } else {
+                        pageNumber = currentPage - 3 + i;
+                      }
+                      return (
+                        <button
+                          key={pageNumber}
+                          onClick={() => handlePageChange(pageNumber)}
+                          className={`w-10 h-10 rounded-lg font-bold transition-all shadow-sm ${
+                            currentPage === pageNumber
+                              ? 'bg-blue-600 text-white border-2 border-blue-600 transform scale-110'
+                              : 'bg-white text-gray-700 border-2 border-gray-300 hover:bg-blue-50 hover:border-blue-400'
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <button
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-blue-50 hover:border-blue-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-gray-300 transition-all font-medium shadow-sm"
+                  >
+                    Next →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -100,10 +100,14 @@ function App() {
   }, []);
 
   const handleEDDProcessingComplete = useCallback((result: any) => {
+    setIsProcessing(true);
+    setEvents([]);
+    setFinalDecision(null);
     setSessionId(result.session_id);
     setActiveView('live-feed');
+    setHasNewDecision(false);
     
-      sseClient.connect(
+    sseClient.connect(
         result.session_id,
         (agentEvent: AgentEvent) => {
           if (agentEvent.step === 'heartbeat') return;
