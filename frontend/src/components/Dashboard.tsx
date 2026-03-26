@@ -8,7 +8,6 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'aml' | 'audit'>('overview');
   const [isResolving, setIsResolving] = useState(false);
 
   console.log('🎯 [Dashboard Component] Received decision prop:', decision);
@@ -114,29 +113,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
           <span className="text-2xl">📋</span>
           KYC Decision Dashboard
         </h2>
-      </div>
-
-
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200 mb-4">
-        <button onClick={() => setActiveTab('overview')}
-          className={`px-6 py-3 font-semibold transition-all duration-200 border-b-2 ${
-            activeTab === 'overview' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-          }`}>
-           Overview
-        </button>
-        <button onClick={() => setActiveTab('aml')}
-          className={`px-6 py-3 font-semibold transition-all duration-200 border-b-2 ${
-            activeTab === 'aml' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-          }`}>
-           AML Monitoring
-        </button>
-        <button onClick={() => setActiveTab('audit')}
-          className={`px-6 py-3 font-semibold transition-all duration-200 border-b-2 ${
-            activeTab === 'audit' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-900'
-          }`}>
-           Audit History
-        </button>
       </div>
 
       <div className={`modern-card rounded-xl border-2 ${colors.border} ${colors.bg} overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300`}>
