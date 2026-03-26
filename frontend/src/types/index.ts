@@ -75,3 +75,15 @@ export interface ProcessingResponse {
 
 export type RiskCategory = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 export type Decision = 'APPROVE' | 'REJECT' | 'ESCALATE' | 'ERROR';
+
+// Audit record interface for audit history
+export interface AuditRecord {
+  id: number;
+  session_id: string;
+  timestamp: string;
+  status: string;
+  customer_name: string;
+  document_type: string | null;
+  risk_score: number | null;
+  details: any;
+}

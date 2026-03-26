@@ -135,6 +135,46 @@ async def get_audit_history(session_id: str, db: Session = Depends(get_db)):
         )
 
 
+@router.get("/kyc/audit")
+async def get_all_audit_logs(db: Session = Depends(get_db)):
+    """
+    Fetch all audit logs from the verification records table.
+    Returns all records ordered by timestamp descending (newest first).
+    """
+    try:
+        logger.info("Fetching all audit logs")
+        
+        # Query all verification records, ordered by timestamp (newest first)
+        records = db.query(VerificationRecord)\
+            .order_by(VerificationRecord.timestamp.desc())\
+            .all()
+        
+        # Convert to dict format for JSON response
+        audit_logs = []
+        for record in records:
+            audit_logs.append({
+                "id": record.id,
+                "session_id": record.session_id,
+                "timestamp": record.timestamp.isoformat(),
+                "status": record.status,
+                "customer_name": record.customer_name,
+                "document_type": record.document_type,
+                "risk_score": record.risk_score,
+                "details": record.details
+            })
+        
+        logger.info(f"Found {len(audit_logs)} total audit records")
+        
+        return audit_logs
+        
+    except Exception as e:
+        logger.error(f"Failed to fetch all audit logs: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to fetch all audit logs: {str(e)}"
+        )
+
+
 @router.get("/documents/samples")
 async def list_sample_documents():
     """List available sample documents"""

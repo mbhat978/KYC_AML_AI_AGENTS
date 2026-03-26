@@ -1,4 +1,4 @@
-/**
+﻿/**
  * API Client for KYC/AML Backend
  */
 import type { DocumentData, ProcessingResponse } from '../types';
@@ -96,5 +96,29 @@ export const resumeProcessing = async (threadId: string, decision: 'APPROVE' | '
     body: JSON.stringify({ thread_id: threadId, decision })
   });
   if (!response.ok) throw new Error('Failed to resume processing');
+  return response.json();
+};
+
+/**
+ * Audit API endpoints
+ */
+export const auditAPI = {
+  async getAuditLogs(sessionId: string): Promise<any> {
+    const response = await fetch(`${API_BASE_URL}/kyc/audit/${sessionId}`);
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+    return response.json();
+  },
+};
+
+/**
+ * Fetch all audit logs (global ledger)
+ */
+export const fetchAllAuditLogs = async (): Promise<any[]> => {
+  const response = await fetch(`${API_BASE_URL}/kyc/audit`);
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
   return response.json();
 };

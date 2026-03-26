@@ -5,13 +5,14 @@ import EDDUploadZone from './components/EDDUploadZone';
 import { LiveFeed } from './components/LiveFeed';
 import { RiskMeter } from './components/RiskMeter';
 import { Dashboard } from './components/Dashboard';
+import AuditHistory from './components/AuditHistory';
 import { api } from './services/api';
 import { sseClient } from './services/sse';
 import type { StreamEvent, FinalDecision, AgentEvent } from './types';
 import jsPDF from 'jspdf';
 
 type ViewMode = 'upload' | 'dashboard' | 'live-feed';
-type TabMode = 'KYC' | 'AML';
+type TabMode = 'KYC' | 'AML' | 'AUDIT';
 
 function App() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -170,7 +171,8 @@ function App() {
     setSessionId('');
     setHasNewDecision(false);
     setIsProcessing(false);
-    setActiveView('upload');
+    // For Audit History tab, automatically show dashboard view
+    setActiveView(tab === 'AUDIT' ? 'dashboard' : 'upload');
   };
 
   const getDecisionStats = () => {
@@ -452,6 +454,15 @@ function App() {
                   <div className="text-xs opacity-90">(AML)</div>
                 </div>
               </button>
+              <button onClick={() => handleTabChange('AUDIT')} className={`flex items-center gap-3 px-8 py-3 rounded-t-lg font-bold text-base transition-all duration-300 ${
+                activeTab === 'AUDIT' ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+              }`}>
+                <span className="text-2xl">📋</span>
+                <div className="text-left">
+                  <div className="font-bold">Audit History</div>
+                  <div className="text-xs opacity-90">(All Documents)</div>
+                </div>
+              </button>
             </div>
           </div>
           
@@ -492,8 +503,14 @@ function App() {
           <div className={`transition-all duration-500 ${activeView === 'upload' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 h-0 overflow-hidden absolute'}`}>
             {activeTab === 'KYC' ? (
               <UploadZone onFileUpload={handleFileUpload} isProcessing={isProcessing} />
-            ) : (
+            ) : activeTab === 'AML' ? (
               <EDDUploadZone onProcessingComplete={handleEDDProcessingComplete} />
+            ) : (
+              <div className="modern-card bg-white border-2 border-dashed border-gray-300 rounded-xl p-12 text-center">
+                <div className="text-gray-400 text-5xl mb-4">📋</div>
+                <p className="text-gray-600 font-medium text-lg">Audit History View</p>
+                <p className="text-sm text-gray-500 mt-2">Click the Dashboard tab to view all processed documents</p>
+              </div>
             )}
             {isProcessing && (
               <div className="mt-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6 shadow-lg animate-[slideIn_0.5s_ease-out]">
@@ -514,7 +531,11 @@ function App() {
           </div>
 
           <div className={`transition-all duration-500 ${activeView === 'dashboard' ? 'opacity-100 scale-100' : 'opacity-0 scale-95 h-0 overflow-hidden absolute'}`}>
-            {activeTab === 'KYC' ? (
+            {activeTab === 'AUDIT' ? (
+              <div className="w-full">
+                <AuditHistory />
+              </div>
+            ) : activeTab === 'KYC' ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div className="lg:col-span-2">
                   <Dashboard decision={finalDecision} onDecisionUpdate={setFinalDecision} />
