@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     
     # LLM Configuration
     openai_api_key: str = ""
-    openai_model: str = "gpt-4-turbo-preview"
+    openai_model: str = "gpt-4o"  # Updated from gpt-4-turbo-preview (deprecated)
     anthropic_api_key: str = ""
     anthropic_model: str = "claude-3-opus-20240229"
     default_llm_provider: Literal["openai", "anthropic"] = "openai"

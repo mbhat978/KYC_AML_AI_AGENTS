@@ -268,7 +268,7 @@ function App() {
       yPos += 8;
       doc.text(`Risk Category: ${finalDecision.risk_category}`, 20, yPos);
       yPos += 8;
-      doc.text(`Risk Score: ${finalDecision.risk_score.toFixed(2)}`, 20, yPos);
+      doc.text(`Risk Score: ${(finalDecision.risk_score ?? 0).toFixed(2)}`, 20, yPos);
       yPos += 8;
       doc.text(`Confidence: ${((finalDecision.confidence ?? 0) * 100).toFixed(0)}%`, 20, yPos);
       yPos += 12;
@@ -292,7 +292,7 @@ function App() {
         doc.setFontSize(11);
         doc.text(`Suspicious Activity: ${finalDecision.transaction_analysis.suspicious_activity ? 'YES' : 'NO'}`, 20, yPos);
         yPos += 8;
-        doc.text(`AML Risk Score: ${finalDecision.transaction_analysis.risk_score.toFixed(1)}/10.0`, 20, yPos);
+        doc.text(`AML Risk Score: ${(finalDecision.transaction_analysis.risk_score ?? 0).toFixed(1)}/10.0`, 20, yPos);
         yPos += 8;
         doc.text(`Risk Level: ${finalDecision.transaction_analysis.risk_level}`, 20, yPos);
         yPos += 12;
@@ -630,7 +630,7 @@ function App() {
                         <div className="stat-value">{finalDecision.transaction_analysis.risk_level}</div>
                         <div className="stat-label">AML Risk Level</div>
                         <div className="stat-trend neutral">
-                          <span className="trend-text">Score: {finalDecision.transaction_analysis.risk_score.toFixed(1)}/10.0</span>
+                          <span className="trend-text">Score: {(finalDecision.transaction_analysis.risk_score ?? 0).toFixed(1)}/10.0</span>
                         </div>
                       </div>
                     </div>

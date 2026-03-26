@@ -65,8 +65,8 @@ export default function AuditHistory() {
   const getRiskBadge = (score: number | null) => {
     if (score === null || score === undefined) return <span className="text-gray-400 text-sm">N/A</span>;
     let colorClass = '', label = '';
-    if (score >= 70) { colorClass = 'bg-red-100 text-red-800 border-red-300'; label = 'HIGH'; }
-    else if (score >= 50) { colorClass = 'bg-orange-100 text-orange-800 border-orange-300'; label = 'MEDIUM'; }
+    if (score >= 7) { colorClass = 'bg-red-100 text-red-800 border-red-300'; label = 'HIGH'; }
+    else if (score >= 5) { colorClass = 'bg-orange-100 text-orange-800 border-orange-300'; label = 'MEDIUM'; }
     else { colorClass = 'bg-green-100 text-green-800 border-green-300'; label = 'LOW'; }
     return (
       <div className="flex items-center gap-2">
@@ -92,7 +92,7 @@ export default function AuditHistory() {
     const approved = auditLogs.filter(log => log.status.toUpperCase().includes('APPROVE')).length;
     const rejected = auditLogs.filter(log => log.status.toUpperCase().includes('REJECT')).length;
     const pending = auditLogs.filter(log => log.status.toUpperCase().includes('PENDING')).length;
-    const highRisk = auditLogs.filter(log => { const score = extractRiskScore(log); return score !== null && score >= 70; }).length;
+    const highRisk = auditLogs.filter(log => { const score = extractRiskScore(log); return score !== null && score >= 7; }).length;
     return { total: auditLogs.length, approved, rejected, pending, highRisk };
   }, [auditLogs]);
 
@@ -105,9 +105,9 @@ export default function AuditHistory() {
       if (riskFilter !== 'all') {
         const score = extractRiskScore(log);
         if (score === null) return riskFilter === 'none';
-        if (riskFilter === 'high' && score < 70) return false;
-        if (riskFilter === 'medium' && (score < 50 || score >= 70)) return false;
-        if (riskFilter === 'low' && score >= 50) return false;
+        if (riskFilter === 'high' && score < 7) return false;
+        if (riskFilter === 'medium' && (score < 5 || score >= 7)) return false;
+        if (riskFilter === 'low' && score >= 5) return false;
       }
       return true;
     });
@@ -212,9 +212,9 @@ export default function AuditHistory() {
               </select>
               <select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)} className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-medium">
                 <option value="all">All Risk Levels</option>
-                <option value="high">High Risk (≥70)</option>
-                <option value="medium">Medium Risk (50-69)</option>
-                <option value="low">Low Risk (&lt;50)</option>
+                <option value="high">High Risk (≥7)</option>
+                <option value="medium">Medium Risk (5-6)</option>
+                <option value="low">Low Risk (&lt;5)</option>
               </select>
               <div className="ml-auto text-sm text-gray-600 flex items-center gap-2">
                 <span className="font-semibold">Showing:</span>
