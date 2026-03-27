@@ -82,10 +82,10 @@ class DecisionAgent:
         Determine final decision using 1-10 risk score scale
         
         Risk Score Scale (1-10):
-        - 1.0-2.5: LOW
-        - 2.5-5.0: MEDIUM  
-        - 5.0-7.5: HIGH
-        - 7.5-10.0: CRITICAL
+        - 1.0-3.0: LOW
+        - 3.0-6.5: MEDIUM  
+        - 6.5-8.0: HIGH
+        - 8.0-10.0: CRITICAL
         
         Confidence Scale (0.0-1.0): unchanged
         
@@ -98,7 +98,7 @@ class DecisionAgent:
         # PRIORITY 1: Auto-approve for LOW risk + high confidence
         # Check this FIRST to prevent LOW risk documents from being incorrectly rejected
         # risk_score <= 2.5 (LOW range) AND confidence > 0.85 AND category is LOW
-        if (risk_score < settings.auto_approve_threshold and 
+        if (risk_score <= settings.auto_approve_threshold and 
             confidence > settings.confidence_threshold and
             risk_category == "LOW"):
             return "APPROVE", "Application approved - low risk profile"

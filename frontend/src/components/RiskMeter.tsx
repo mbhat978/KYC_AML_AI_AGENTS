@@ -152,22 +152,22 @@ export const RiskMeter: React.FC<RiskMeterProps> = ({ score, category }) => {
           <div className="text-center">
             <div className="w-full bg-green-500 h-2 rounded mb-1"></div>
             <span className="text-green-700 font-medium">LOW</span>
-            <div className="text-gray-600">1-2.5</div>
+            <div className="text-gray-600">1.0-3.0</div>
           </div>
           <div className="text-center">
             <div className="w-full bg-yellow-500 h-2 rounded mb-1"></div>
             <span className="text-yellow-700 font-medium">MEDIUM</span>
-            <div className="text-gray-600">2.5-5</div>
+            <div className="text-gray-600">3.0-6.5</div>
           </div>
           <div className="text-center">
             <div className="w-full bg-orange-500 h-2 rounded mb-1"></div>
             <span className="text-orange-700 font-medium">HIGH</span>
-            <div className="text-gray-600">5-7.5</div>
+            <div className="text-gray-600">6.5-8.0</div>
           </div>
           <div className="text-center">
             <div className="w-full bg-red-500 h-2 rounded mb-1"></div>
             <span className="text-red-700 font-medium">CRITICAL</span>
-            <div className="text-gray-600">7.5-10</div>
+            <div className="text-gray-600">8.0-10</div>
           </div>
         </div>
       </div>
