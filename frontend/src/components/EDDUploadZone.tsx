@@ -162,17 +162,18 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
           1. Upload ID Document (PDF/Image)
         </label>
         <div
-          className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`modern-card relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ease-out ${
             idDragActive
-              ? 'border-blue-500 bg-blue-50'
+              ? 'border-blue-500 bg-blue-50 bg-gradient-to-br from-blue-50 to-sky-50 scale-[1.02] shadow-xl'
               : idFile
               ? 'border-green-500 bg-green-50'
-              : 'border-gray-300 hover:border-gray-400'
+              : 'border-gray-300 bg-white/80 hover:border-blue-300 hover:bg-white hover:shadow-lg'
           }`}
           onDragEnter={handleIdDrag}
           onDragOver={handleIdDrag}
           onDragLeave={handleIdDrag}
           onDrop={handleIdDrop}
+          style={{ backdropFilter: 'blur(8px)' }}
         >
           <input
             type="file"
@@ -182,7 +183,7 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
             accept=".pdf,.png,.jpg,.jpeg"
             disabled={isProcessing}
           />
-          <div className="space-y-2">
+          <div className="space-y-2 text-center">
             {idFile ? (
               <>
                 <svg className="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -217,17 +218,18 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
           2. Upload Transaction History (CSV)
         </label>
         <div
-          className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`modern-card relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ease-out ${
             csvDragActive
-              ? 'border-blue-500 bg-blue-50'
+              ? 'border-blue-500 bg-blue-50 bg-gradient-to-br from-blue-50 to-sky-50 scale-[1.02] shadow-xl'
               : csvFile
               ? 'border-green-500 bg-green-50'
-              : 'border-gray-300 hover:border-gray-400'
+              : 'border-gray-300 bg-white/80 hover:border-blue-300 hover:bg-white hover:shadow-lg'
           }`}
           onDragEnter={handleCsvDrag}
           onDragOver={handleCsvDrag}
           onDragLeave={handleCsvDrag}
           onDrop={handleCsvDrop}
+          style={{ backdropFilter: 'blur(8px)' }}
         >
           <input
             type="file"
@@ -237,7 +239,7 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
             accept=".csv"
             disabled={isProcessing}
           />
-          <div className="space-y-2">
+          <div className="space-y-2 text-center">
             {csvFile ? (
               <>
                 <svg className="mx-auto h-12 w-12 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
