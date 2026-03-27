@@ -1,0 +1,26 @@
+transaction_id,date,type,amount,currency,description,counterparty,location,channel
+TXN620650,3/14/2026,Wire Transfer,110314.1,EUR,Transfer to high-risk jurisdiction,Unknown Beneficiary,Hong Kong,Cash
+TXN144970,3/13/2026,Salary Credit,9900.2,INR,ATM withdrawal,XYZ Bank ATM,Mumbai,Online
+TXN286141,2/4/2026,Large Withdrawal,98706.79,EUR,Unusual cash withdrawal,Offshore Company Ltd,Dubai,Branch
+TXN374523,1/21/2026,UPI Payment,10639.04,INR,ATM withdrawal,XYZ Bank ATM,Delhi,Mobile App
+TXN100078,12/30/2025,Cash Deposit,169880.14,EUR,Wire transfer to overseas account,Offshore Company Ltd,Hong Kong,Branch
+TXN777413,3/19/2026,Wire Transfer,162354.51,EUR,Large cash deposit,Cash Deposit,Dubai,Wire Transfer
+TXN795875,2/9/2026,Bill Payment,24054.91,INR,Utility bill payment,Utility Provider,Delhi,ATM
+TXN310524,3/27/2026,ATM Withdrawal,20888.81,INR,UPI payment,Online Merchant,Bangalore,Mobile App
+TXN723782,3/23/2026,ATM Withdrawal,26884.25,INR,Utility bill payment,XYZ Bank ATM,Bangalore,ATM
+TXN680443,2/4/2026,Large Withdrawal,185794.04,EUR,Unusual cash withdrawal,Cash Deposit,Singapore,Cash
+TXN884665,1/6/2026,Bill Payment,4189.77,INR,ATM withdrawal,ABC Company Pvt Ltd,Delhi,ATM
+TXN945671,3/18/2026,Wire Transfer,94813.12,INR,Large cash deposit,Cash Deposit,Hong Kong,Branch
+TXN458254,2/1/2026,Large Withdrawal,194547.18,EUR,Transfer to high-risk jurisdiction,Foreign Entity,Hong Kong,Wire Transfer
+TXN450460,3/20/2026,Wire Transfer,105494.88,EUR,Wire transfer to overseas account,Unknown Beneficiary,Mumbai,Cash
+TXN924576,2/21/2026,Salary Credit,18605.43,INR,UPI payment,Utility Provider,Bangalore,Mobile App
+TXN142223,2/14/2026,Cash Deposit,66339.03,EUR,Wire transfer to overseas account,Offshore Company Ltd,Singapore,Cash
+TXN175380,1/18/2026,Bill Payment,13782.36,INR,ATM withdrawal,ABC Company Pvt Ltd,Delhi,ATM
+TXN629145,2/12/2026,ATM Withdrawal,20115.56,INR,ATM withdrawal,Online Merchant,Mumbai,Online
+TXN588702,3/9/2026,Bill Payment,2311.69,INR,ATM withdrawal,Utility Provider,Chennai,Mobile App
+TXN634500,3/8/2026,Bill Payment,8846.06,INR,Monthly salary,Online Merchant,Delhi,Online
+TXN804929,2/1/2026,Salary Credit,19511.48,INR,Monthly salary,Utility Provider,Mumbai,Mobile App
+TXN660503,1/27/2026,Cash Deposit,108271.66,INR,Large cash deposit,Unknown Beneficiary,Singapore,Cash
+TXN835066,3/13/2026,Large Withdrawal,51762.77,USD,Transfer to high-risk jurisdiction,Offshore Company Ltd,Mumbai,Wire Transfer
+TXN653499,2/14/2026,ATM Withdrawal,29654.71,INR,UPI payment,Utility Provider,Chennai,Online
+TXN991453,3/11/2026,UPI Payment,12088.14,INR,Utility bill payment,Online Merchant,Delhi,ATM

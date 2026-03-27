@@ -1,0 +1,31 @@
+transaction_id,date,type,amount,currency,description,counterparty,location,channel
+TXN271561,2/19/2026,Bill Payment,20163.97,INR,Bill payment,Utility Provider,Mumbai,Mobile App
+TXN876808,3/27/2026,Cash Deposit,139846.52,INR,Large cash deposit - multiple locations,Cash Deposit - Multiple Branches,Switzerland,International Transfer
+TXN157476,3/15/2026,Cash Deposit,349195.09,USD,Transfer to sanctioned country,High-Risk Jurisdiction Entity,Panama,International Transfer
+TXN930342,3/17/2026,Wire Transfer,325335.27,USD,Layered transactions detected,High-Risk Jurisdiction Entity,Panama,International Transfer
+TXN244741,2/19/2026,Wire Transfer,137302.13,INR,International wire transfer,High-Risk Jurisdiction Entity,Cayman Islands,Cash
+TXN470525,3/19/2026,Wire Transfer,273749.19,AED,Rapid movement of funds,Crypto Exchange,Hong Kong,Wire Transfer
+TXN868306,3/8/2026,Online Shopping,24140.55,INR,Online shopping,Online Merchant,Bangalore,Mobile App
+TXN133562,3/26/2026,Bill Payment,10713.61,INR,Online shopping,Utility Provider,Mumbai,Mobile App
+TXN134172,2/20/2026,Wire Transfer,361232.99,EUR,International wire transfer,PEP-linked Account,Cayman Islands,Wire Transfer
+TXN749511,1/15/2026,UPI Payment,21621.18,INR,UPI payment,E-commerce Site,Delhi,Mobile App
+TXN597753,2/10/2026,Online Shopping,11551.47,INR,UPI payment,Online Merchant,Bangalore,Mobile App
+TXN917771,12/30/2025,Online Shopping,11667.93,INR,Online shopping,Online Merchant,Delhi,Online
+TXN415085,3/17/2026,Cash Deposit,299917.62,USD,Layered transactions detected,Cash Deposit - Multiple Branches,Dubai,International Transfer
+TXN392423,1/21/2026,Bill Payment,9300.92,INR,Online shopping,Online Merchant,Mumbai,Online
+TXN209317,2/26/2026,Cash Deposit,269205.16,INR,Rapid movement of funds,PEP-linked Account,Panama,International Transfer
+TXN709528,1/4/2026,Wire Transfer,354458.7,INR,Rapid movement of funds,High-Risk Jurisdiction Entity,Cayman Islands,International Transfer
+TXN693728,2/11/2026,International Transfer,119520.25,USD,Rapid movement of funds,Cash Deposit - Multiple Branches,Switzerland,International Transfer
+TXN230255,3/6/2026,Cash Deposit,340383.42,EUR,Transfer to sanctioned country,Shell Company Ltd,Switzerland,International Transfer
+TXN205444,3/25/2026,Cash Deposit,267517.31,EUR,Rapid movement of funds,PEP-linked Account,Dubai,Wire Transfer
+TXN985897,1/20/2026,Wire Transfer,449773.26,AED,Transfer to sanctioned country,Shell Company Ltd,Dubai,Cash
+TXN383400,12/31/2025,Cash Deposit,443252.73,INR,Transfer to sanctioned country,Crypto Exchange,Panama,Cash
+TXN193096,3/18/2026,Bill Payment,22428.98,INR,UPI payment,Utility Provider,Delhi,Mobile App
+TXN849151,2/8/2026,Bill Payment,12040.26,INR,Online shopping,E-commerce Site,Delhi,Online
+TXN456005,1/14/2026,Bill Payment,18576.96,INR,UPI payment,Online Merchant,Bangalore,Online
+TXN122599,1/12/2026,Bill Payment,14273.47,INR,Bill payment,Utility Provider,Mumbai,Online
+TXN877990,2/26/2026,Bill Payment,1365.88,INR,Online shopping,Online Merchant,Bangalore,Mobile App
+TXN686988,3/9/2026,Online Shopping,22063.92,INR,Bill payment,Online Merchant,Bangalore,Online
+TXN819995,3/11/2026,International Transfer,206641.4,INR,Rapid movement of funds,PEP-linked Account,Panama,Cash
+TXN821507,12/30/2025,Crypto Exchange,220187.58,EUR,International wire transfer,Shell Company Ltd,Hong Kong,International Transfer
+TXN540979,1/13/2026,UPI Payment,12257.55,INR,UPI payment,E-commerce Site,Mumbai,Mobile App

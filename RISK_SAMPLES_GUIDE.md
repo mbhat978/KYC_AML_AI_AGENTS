@@ -8,9 +8,9 @@ This comprehensive guide documents all sample documents (JSON and PDF) available
 ## Understanding Risk Assessment Metrics
 
 ### Risk Score Scale (0-10)
-- **0 - 4.0**: LOW RISK - Document passes all checks
-- **4.1 - 7.0**: MEDIUM RISK - Minor to moderate concerns detected
-- **7.1 - 10**: HIGH/CRITICAL RISK - Significant issues, likely rejection
+- **0 - 2.5**: LOW RISK - Document passes all checks
+- **2.5 - 7.5**: MEDIUM/HIGH RISK - Minor to moderate concerns detected
+- **7.5 - 10**: HIGH/CRITICAL RISK - Significant issues, likely rejection
 
 ### Risk Categories
 - **LOW**: Clean verification, no red flags
@@ -28,140 +28,8 @@ The system uses TWO types of confidence:
 
 ### Decision Types
 - **APPROVE**: Low risk, automatic approval
-- **ESCALATE**: Medium risk, manual review required
+- **ESCALATE**: Medium risk, manual review required (Human Override Process Implemented)
 - **REJECT**: High/Critical risk, automatic rejection
-
----
-
-# JSON Samples
-
-All JSON samples located in `samples/json/`
-
-## 1. Valid PAN Card (`pan_card.json`)
-
-### Document Information
-- **Document Type**: PAN Card
-- **Name**: Rajesh Kumar Sharma
-- **Father's Name**: Mohan Lal Sharma
-- **Date of Birth**: 15/06/1985
-- **PAN Number**: ABCDE1234F
-- **Address**: 123 MG Road, Bangalore, Karnataka 560001
-
-### Risk Assessment
-- **Risk Score**: ~1.5/10 - **LOW RISK**
-- **Risk Category**: LOW
-- **Extraction Confidence**: 95% (High quality document)
-- **Reasoning Confidence**: 90% (Very confident in approval)
-- **Expected Decision**: **APPROVE**
-
-### Verification Results
-- ✅ Government database: VERIFIED
-- ✅ PAN format: VALID
-- ✅ PEP check: CLEAR
-- ✅ Sanctions check: CLEAR
-- ✅ Data consistency: HIGH
-
-### Use Case
-Perfect for testing successful KYC verification flow with clean Indian identity document.
-
----
-
-## 2. Rejected PAN Card (`pan_card_rejected.json`)
-
-### Document Information
-- **Document Type**: PAN Card
-- **Name**: Ahmed Hassan
-- **Father's Name**: Abdul Hassan
-- **Date of Birth**: 30/01/1970
-- **PAN Number**: AHXYZ9876K
-- **Address**: 456 Nehru Place, New Delhi, Delhi 110019
-
-### Risk Assessment
-- **Risk Score**: ~8.5/10 - **CRITICAL RISK**
-- **Risk Category**: CRITICAL
-- **Extraction Confidence**: 92% (Good quality extraction)
-- **Reasoning Confidence**: 10% (Very low - sanctions match triggers rejection)
-- **Expected Decision**: **REJECT**
-
-### Verification Results
-- ❌ Sanctions list: **CRITICAL MATCH** - Terrorism financing (Syria)
-- ❌ Risk level: CRITICAL
-- ⚠️ High-risk jurisdiction
-- ⚠️ Severe sanctions violations
-
-### Risk Factors
-1. **Terrorism Financing** (CRITICAL severity) - +60 points
-2. **Sanctions list match** - Syria-based individual
-3. **High-risk country** - +20 points
-4. **Multiple red flags** - Automatic rejection
-
-### Use Case
-Tests the rejection flow for sanctioned individuals with critical risk factors.
-
----
-
-## 3. Valid Passport (`passport.json`)
-
-### Document Information
-- **Document Type**: Passport
-- **Name**: Jonathan David Miller
-- **Nationality**: British
-- **Date of Birth**: 30/11/1988
-- **Passport Number**: K1234567
-- **Sex**: M
-- **Issue Date**: 15/01/2020
-- **Expiry Date**: 15/01/2030
-- **Address**: 789 Baker Street, London, UK SW1A 1AA
-
-### Risk Assessment
-- **Risk Score**: ~2.0/10 - **LOW RISK**
-- **Risk Category**: LOW
-- **Extraction Confidence**: 92% (Good quality passport scan)
-- **Reasoning Confidence**: 90% (Very confident in approval)
-- **Expected Decision**: **APPROVE**
-
-### Verification Results
-- ✅ Passport format: VALID
-- ✅ Not expired: Valid until 2030
-- ✅ MRZ validation: PASSED
-- ✅ PEP check: CLEAR
-- ✅ Sanctions check: CLEAR
-- ✅ Country risk: LOW (UK)
-
-### Use Case
-Tests international document verification with Western passport standards.
-
----
-
-## 4. Valid Driver's License (`drivers_license.json`)
-
-### Document Information
-- **Document Type**: California Driver's License
-- **Name**: Sarah Johnson
-- **Date of Birth**: 08/10/1992
-- **License Number**: DL1234567890
-- **Address**: 321 Oak Avenue, San Francisco, CA 94102
-- **Issue Date**: 01/15/2022
-- **Expiry Date**: 08/10/2027
-- **License Class**: C
-
-### Risk Assessment
-- **Risk Score**: ~1.8/10 - **LOW RISK**
-- **Risk Category**: LOW
-- **Extraction Confidence**: 89% (Good quality US license)
-- **Reasoning Confidence**: 88% (High confidence in approval)
-- **Expected Decision**: **APPROVE**
-
-### Verification Results
-- ✅ License format: VALID (California DMV)
-- ✅ Not expired: Valid until 2027
-- ✅ State verification: PASSED
-- ✅ PEP check: CLEAR
-- ✅ Sanctions check: CLEAR
-- ✅ Address verification: VALID
-
-### Use Case
-Tests US state-issued document processing and address verification.
 
 ---
 
@@ -175,7 +43,7 @@ Location: `samples/pdf/pan_card/`
 
 ### Valid/Low Risk PAN Cards
 
-#### 1. `pan_card_sample_1.pdf`
+#### 1. `pan_card_low_risk_1.pdf`
 
 **Profile**: Clean Indian citizen with verified identity
 
@@ -204,7 +72,7 @@ Location: `samples/pdf/pan_card/`
 
 ---
 
-#### 2. `pan_card_sample_2.pdf`
+#### 2. `pan_card_low_risk_2.pdf`
 
 **Profile**: Standard quality document with minor artifacts
 
@@ -225,7 +93,7 @@ Location: `samples/pdf/pan_card/`
 
 ---
 
-#### 3. `pan_card_sample_3.pdf`
+#### 3. `pan_card_low_risk_3.pdf`
 
 **Profile**: Acceptable quality with slight degradation
 
@@ -248,7 +116,7 @@ Location: `samples/pdf/pan_card/`
 
 ### Medium Risk PAN Cards
 
-#### 4. `pan_card_risk60_1.pdf`
+#### 4. `pan_card_risk3.4_1.pdf`
 
 **Profile**: Robert Williams - Former UK Minister of Finance (PEP)
 
@@ -287,7 +155,7 @@ Location: `samples/pdf/pan_card/`
 
 ---
 
-#### 5. `pan_card_risk60_2.pdf`
+#### 5. `pan_card_risk6.0_2.pdf`
 
 **Profile**: Elena Rodriguez - Active Senator, Mexico (PEP)
 
@@ -328,7 +196,7 @@ Location: `samples/pdf/pan_card/`
 
 ### High Risk PAN Cards
 
-#### 6. `pan_card_risk70_1.pdf`
+#### 6. `pan_card_risk7.0_1.pdf`
 
 **Profile**: Maria Santos - Sanctions List Match (Money Laundering, Venezuela)
 
@@ -367,7 +235,7 @@ Location: `samples/pdf/pan_card/`
 
 ---
 
-#### 7. `pan_card_risk70_2.pdf`
+#### 7. `pan_card_risk7.0_2.pdf`
 
 **Profile**: Victor Petrov - Sanctions List Match (Financial Crimes, Russia)
 
@@ -408,7 +276,7 @@ Location: `samples/pdf/pan_card/`
 
 ### Critical Risk PAN Cards
 
-#### 8. `pan_card_risk85_1.pdf`
+#### 8. `pan_card_risk8.5_1.pdf`
 
 **Profile**: Ahmed Hassan - CRITICAL Sanctions Match (Terrorism Financing, Syria)
 
@@ -449,7 +317,7 @@ Location: `samples/pdf/pan_card/`
 
 ---
 
-#### 9. `pan_card_risk85_2.pdf`
+#### 9. `pan_card_risk8.5_2.pdf`
 
 **Profile**: Ahmed H - CRITICAL Sanctions Match (Terrorism Financing, Syria)
 
@@ -504,7 +372,7 @@ Location: `samples/pdf/passport/`
 
 ### Valid/Low Risk Passports
 
-#### 1. `passport_sample_1.pdf`
+#### 1. `passport_low_risk_1.pdf`
 
 **Profile**: Clean international passport with verified identity
 
@@ -533,7 +401,7 @@ Location: `samples/pdf/passport/`
 
 ---
 
-#### 2. `passport_sample_2.pdf`
+#### 2. `passport_low_risk_2.pdf`
 
 **Profile**: Standard quality passport with minor artifacts
 
@@ -554,7 +422,7 @@ Location: `samples/pdf/passport/`
 
 ---
 
-#### 3. `passport_sample_3.pdf`
+#### 3. `passport_low_risk_3.pdf`
 
 **Profile**: Acceptable quality with slight degradation
 
@@ -577,7 +445,7 @@ Location: `samples/pdf/passport/`
 
 ### Medium Risk Passports
 
-#### 4. `passport_risk60_1.pdf`
+#### 4. `passport_risk_3.4.pdf`
 
 **Profile**: Robert Williams - Former UK Minister of Finance (PEP)
 
@@ -618,7 +486,7 @@ Location: `samples/pdf/passport/`
 
 ### High Risk Passports
 
-#### 5. `passport_risk70_1.pdf`
+#### 5. `passport_risk_7.0.pdf`
 
 **Profile**: Maria Santos - Sanctions List Match (Money Laundering, Venezuela)
 
@@ -660,7 +528,7 @@ Location: `samples/pdf/passport/`
 
 ### Critical Risk Passports
 
-#### 6. `passport_risk85_1.pdf`
+#### 6. `passport_risk_8.5.pdf`
 
 **Profile**: Ahmed Hassan - CRITICAL Sanctions Match (Terrorism Financing, Syria)
 
@@ -710,19 +578,19 @@ Location: `samples/pdf/passport/`
 ```bash
 # Test low-risk passport
 curl -X POST http://localhost:8000/api/upload \
-  -F "file=@samples/pdf/passport/passport_sample_1.pdf"
+  -F "file=@samples/pdf/passport/passport_low_risk_1.pdf"
 
 # Test medium-risk passport
 curl -X POST http://localhost:8000/api/upload \
-  -F "file=@samples/pdf/passport/passport_risk60_1.pdf"
+  -F "file=@samples/pdf/passport/passport_risk_3.4.pdf"
 
 # Test high-risk passport
 curl -X POST http://localhost:8000/api/upload \
-  -F "file=@samples/pdf/passport/passport_risk70_1.pdf"
+  -F "file=@samples/pdf/passport/passport_risk_7.0.pdf"
 
 # Test critical-risk passport
 curl -X POST http://localhost:8000/api/upload \
-  -F "file=@samples/pdf/passport/passport_risk85_1.pdf"
+  -F "file=@samples/pdf/passport/passport_risk_8.5.pdf"
 ```
 
 #### Test with Python
@@ -740,12 +608,12 @@ with open('samples/pdf/passport/passport_sample_1.pdf', 'rb') as f:
 
 | File | Risk Score (0-10) | Status | Key Indicators |
 |------|-----------|---------|----------------|
-| passport_sample_1.pdf | 1.5-2.5 | APPROVED | Clean, high quality |
-| passport_sample_2.pdf | 1.8-2.5 | APPROVED | Good quality, minor artifacts |
-| passport_sample_3.pdf | 2.0-3.0 | APPROVED | Acceptable quality |
-| passport_risk60_1.pdf | 3.0-4.0 | ESCALATE | Former PEP match (Robert Williams) |
-| passport_risk70_1.pdf | 6.5-7.5 | REJECTED | Sanctions match - Money laundering (Maria Santos) |
-| passport_risk85_1.pdf | 8.0-9.0 | REJECTED | CRITICAL sanctions - Terrorism financing (Ahmed Hassan) |
+| passport_low_risk_1.pdf | 1.5-2.5 | APPROVED | Clean, high quality |
+| passport_low_risk_2.pdf | 1.8-2.5 | APPROVED | Good quality, minor artifacts |
+| passport_low_risk_3.pdf | 2.0-3.0 | APPROVED | Acceptable quality |
+| passport_risk_3.4.pdf | 3.0-4.0 | ESCALATE | Former PEP match (Robert Williams) |
+| passport_risk_7.0.pdf | 6.5-7.5 | REJECTED | Sanctions match - Money laundering (Maria Santos) |
+| passport_risk_8.5.pdf | 8.0-9.0 | REJECTED | CRITICAL sanctions - Terrorism financing (Ahmed Hassan) |
 
 ---
 
@@ -754,7 +622,6 @@ with open('samples/pdf/passport/passport_sample_1.pdf', 'rb') as f:
 - **CONFIDENCE_SCORES_EXPLAINED.md** - Detailed explanation of confidence metrics
 - **TESTING_GUIDE.md** - Comprehensive system testing procedures
 - **PDF_UPLOAD_GUIDE.md** - PDF upload and troubleshooting
-- **RISK_SCORING_FIX.md** - Recent fixes to risk scoring system
 
 ---
 

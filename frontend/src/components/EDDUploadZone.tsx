@@ -158,8 +158,8 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
 
       {/* ID Document Upload Zone */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">
-          1. Upload ID Document (PDF/Image)
+        <label className="block text-md font-semibold text-gray-700">
+          Upload ID Document (PDF/Image)
         </label>
         <div
           className={`modern-card relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ease-out ${
@@ -202,7 +202,7 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
                     strokeLinejoin="round"
                   />
                 </svg>
-                <p className="text-sm text-gray-600">
+                <p className="text-md text-gray-600">
                   <span className="font-semibold text-blue-600 hover:text-blue-700">Click to upload</span> or drag and drop
                 </p>
                 <p className="text-xs text-gray-500">PDF, PNG, JPG up to 10MB</p>
@@ -214,8 +214,8 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
 
       {/* CSV Transaction History Upload Zone */}
       <div className="space-y-2">
-        <label className="block text-sm font-semibold text-gray-700">
-          2. Upload Transaction History (CSV)
+        <label className="block text-md font-semibold text-gray-700">
+          Upload Transaction History (CSV)
         </label>
         <div
           className={`modern-card relative border-2 border-dashed rounded-xl p-8 transition-all duration-300 ease-out ${
@@ -258,7 +258,7 @@ export default function EDDUploadZone({ onProcessingComplete }: EDDUploadZonePro
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p className="text-sm text-gray-600">
+                <p className="text-md text-gray-600">
                   <span className="font-semibold text-blue-600 hover:text-blue-700">Click to upload</span> or drag and drop
                 </p>
                 <p className="text-xs text-gray-500">CSV file with transaction history</p>

@@ -439,9 +439,9 @@ function App() {
           </div>
 
           <div className="max-w-7xl mx-auto px-4 mt-4">
-            <div className="flex gap-3 pb-3 border-b-2 border-gray-200">
+            <div className="flex justify-center space-x-2 gap-3 pb-3 border-b-2 border-gray-200">
               <button onClick={() => handleTabChange('KYC')} className={`flex items-center gap-3 px-8 py-3 rounded-t-lg font-bold text-base transition-all duration-300 ${
-                activeTab === 'KYC' ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+                activeTab === 'KYC' ? 'bg-gradient-to-r from-sky-200 to-indigo-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
               }`}>
                 <span className="text-2xl">👤</span>
                 <div className="text-left">
@@ -450,7 +450,7 @@ function App() {
                 </div>
               </button>
               <button onClick={() => handleTabChange('AML')} className={`flex items-center gap-3 px-8 py-3 rounded-t-lg font-bold text-base transition-all duration-300 ${
-                activeTab === 'AML' ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+                activeTab === 'AML' ? 'bg-gradient-to-r from-purple-300 to-blue-500 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
               }`}>
                 <span className="text-2xl">💰</span>
                 <div className="text-left">
@@ -459,7 +459,7 @@ function App() {
                 </div>
               </button>
               <button onClick={() => handleTabChange('AUDIT')} className={`flex items-center gap-3 px-8 py-3 rounded-t-lg font-bold text-base transition-all duration-300 ${
-                activeTab === 'AUDIT' ? 'bg-gradient-to-r from-green-600 to-teal-600 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
+                activeTab === 'AUDIT' ? 'bg-gradient-to-r from-green-200 to-violet-600 text-white shadow-lg transform scale-105' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-900'
               }`}>
                 <span className="text-2xl">📋</span>
                 <div className="text-left">

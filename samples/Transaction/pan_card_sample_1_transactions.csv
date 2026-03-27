@@ -1,0 +1,21 @@
+transaction_id,date,type,amount,currency,description,counterparty,location,channel
+TXN649259,3/14/2026,Online Shopping,15104.06,INR,Shopping,XYZ Bank ATM,Bangalore,Branch
+TXN121839,2/18/2026,ATM Withdrawal,19462.61,INR,Online purchase,Family Member,Pune,ATM
+TXN172124,1/13/2026,ATM Withdrawal,12566.27,INR,Utility bill payment,Family Member,Bangalore,ATM
+TXN437891,1/24/2026,Bill Payment,23712.45,INR,Transfer to family member,XYZ Bank ATM,Bangalore,ATM
+TXN783159,2/13/2026,Fund Transfer,29744.02,INR,Shopping,Family Member,Delhi,Branch
+TXN721241,3/27/2026,UPI Payment,16911.26,INR,ATM cash withdrawal,Retail Store,Bangalore,Online
+TXN746998,3/6/2026,Fund Transfer,30780.66,INR,UPI payment to merchant,Online Merchant,Delhi,Mobile App
+TXN712654,2/24/2026,Online Shopping,5308,INR,Shopping,Hospital,Pune,ATM
+TXN336312,2/25/2026,Bill Payment,8967.82,INR,Monthly salary,ABC Company Pvt Ltd,Chennai,Mobile App
+TXN907253,2/14/2026,Bill Payment,851.61,INR,Online purchase,ABC Company Pvt Ltd,Delhi,ATM
+TXN485247,1/4/2026,Fund Transfer,5123.03,INR,Monthly salary,Hospital,Delhi,ATM
+TXN356590,2/16/2026,ATM Withdrawal,15020.12,INR,UPI payment to merchant,Utility Provider,Chennai,Online
+TXN460377,2/6/2026,Fund Transfer,7222.46,INR,Online purchase,Utility Provider,Pune,Branch
+TXN551479,3/26/2026,Bill Payment,8732.38,INR,UPI payment to merchant,Utility Provider,Pune,Online
+TXN361085,2/20/2026,Bill Payment,7001.83,INR,Monthly salary,Online Merchant,Chennai,ATM
+TXN799290,3/26/2026,Online Shopping,10933.04,INR,ATM cash withdrawal,ABC Company Pvt Ltd,Bangalore,ATM
+TXN970767,2/17/2026,UPI Payment,18622.88,INR,Utility bill payment,Retail Store,Delhi,Mobile App
+TXN176808,1/25/2026,Online Shopping,26595.32,INR,Utility bill payment,ABC Company Pvt Ltd,Mumbai,Mobile App
+TXN699599,2/6/2026,Online Shopping,27838.56,INR,Transfer to family member,Hospital,Pune,Branch
+TXN913418,2/12/2026,ATM Withdrawal,5259.24,INR,UPI payment to merchant,Online Merchant,Delhi,Mobile App
