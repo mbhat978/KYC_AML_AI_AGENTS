@@ -6,6 +6,7 @@ from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from typing import Union
 from config.settings import settings
 from loguru import logger
 
@@ -38,7 +39,7 @@ class LLMClient:
     def generate(
         self,
         system_prompt: str,
-        user_message: str,
+        user_message: Union[str, List[Dict[str, Any]]],
         context: Optional[Dict[str, Any]] = None
     ) -> str:
         """
@@ -46,7 +47,7 @@ class LLMClient:
         
         Args:
             system_prompt: The system instruction
-            user_message: The user's input
+            user_message: The user's input (string or list of content objects for multimodal)
             context: Additional context to include
             
         Returns:
@@ -54,9 +55,14 @@ class LLMClient:
         """
         try:
             messages = [
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=user_message)
+                SystemMessage(content=system_prompt)
             ]
+            
+            # Handle multimodal messages (for vision)
+            if isinstance(user_message, list):
+                messages.append(HumanMessage(content=user_message))
+            else:
+                messages.append(HumanMessage(content=user_message))
             
             if context:
                 context_str = f"\nContext: {context}"

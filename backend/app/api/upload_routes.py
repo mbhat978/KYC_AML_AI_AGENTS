@@ -9,6 +9,7 @@ import uuid
 from loguru import logger
 import sys
 import os
+import base64
 
 # Add project root to path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
@@ -134,9 +135,8 @@ def parse_document_data(text: str, file_type: str) -> dict:
                     extracted_fields["name"] = potential_name.title()
                     break
     
-    # If no name found, use a placeholder
-    if "name" not in extracted_fields:
-        extracted_fields["name"] = "Extracted from PDF"
+    # If no name found, return without name (let extraction agent handle it)
+    # Removed hardcoded "Extracted from PDF" bug
     
     return extracted_fields
 
@@ -183,17 +183,28 @@ async def upload_document(
         
         # Extract text from document
         extracted_text = ""
+        image_base64 = None
+        
         if file.content_type == "application/pdf":
             extracted_text = extract_text_from_pdf(file_content)
             logger.info(f"Extracted {len(extracted_text)} characters from PDF")
         else:
-            # For images, we'd need OCR (pytesseract, etc.)
-            # For now, create a placeholder
+            # For images (JPG/PNG), convert to base64 for GPT-4o Vision
             logger.info(f"Image upload detected: {file.content_type}")
-            extracted_text = "IMAGE_DOCUMENT"
+            image_base64 = base64.b64encode(file_content).decode('utf-8')
+            extracted_text = "[IMAGE PAYLOAD]"
+            logger.info(f"Image converted to base64 (length: {len(image_base64)} chars)")
         
-        # Parse the extracted text
-        extracted_fields = parse_document_data(extracted_text, file.content_type)
+        # Parse the extracted text (only for PDFs, skip for images)
+        if file.content_type == "application/pdf":
+            extracted_fields = parse_document_data(extracted_text, file.content_type)
+        else:
+            # For images, don't parse - let extraction agent handle with vision
+            extracted_fields = {
+                "document_type": document_type if document_type else "UNKNOWN",
+                "raw_text": extracted_text,
+                "confidence": 0.0  # Will be determined by vision model
+            }
         
         # Override document type if provided
         if document_type:
@@ -210,6 +221,11 @@ async def upload_document(
                 "session_id": session_id
             }
         }
+        
+        # Store base64 image if present (for GPT-4o Vision)
+        if image_base64:
+            document["image_base64"] = image_base64
+            logger.info(f"✅ Image base64 stored in document for session {session_id}")
         
         # Include transaction CSV data if provided (for AML analysis)
         if transaction_csv_data:
