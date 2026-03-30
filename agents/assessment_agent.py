@@ -82,14 +82,13 @@ class AssessmentAgent:
             reason = sanctions_match.get('reason', '')
             
             if severity == 'CRITICAL':
-                return 8.5  # Matches risk85 samples - no further adjustments needed
+                return 8.5  # no further adjustments needed
             elif severity == 'HIGH':
                 # Base HIGH sanctions = 7.0, with slight variation based on reason
-                score += 4.0  # Adds to 7.0 for risk70 samples
+                score += 4.0  
                 # Add small variation for different types of financial crimes
                 if 'financial' in reason.lower():
-                    score += 0.2  # Victor Petrov → 7.2
-                # Maria Santos (money laundering) stays at 7.0
+                    score += 0.2  
             else:
                 score += 2.0
         

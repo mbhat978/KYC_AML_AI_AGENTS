@@ -558,12 +558,10 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2">
-                  <div className="monitoring-container">
-                    {/* Header Section */}
-                    <div className="monitoring-header-section">
-                      <div className="header-content">
+              <div className="monitoring-container">
+                {/* Header Section */}
+                <div className="monitoring-header-section">
+                  <div className="header-content">
                     <h1 className="monitoring-title">Transaction Monitoring</h1>
                     <p className="monitoring-subtitle">Real-time AML surveillance & compliance tracking</p>
                   </div>
@@ -623,7 +621,7 @@ function App() {
 
                     {/* AML Risk Level */}
                     <div className={`stat-card-modern ${
-                      finalDecision.transaction_analysis.risk_level === 'HIGH' ? 'danger' : 
+                      finalDecision.transaction_analysis.risk_level === 'HIGH' ? 'warning' : 
                       finalDecision.transaction_analysis.risk_level === 'MEDIUM' ? 'warning' : 'success'
                     }`}>
                       <div className="stat-icon-wrapper">
@@ -633,10 +631,10 @@ function App() {
                         </div>
                       </div>
                       <div className="stat-info">
-                        <div className="stat-value">{finalDecision.transaction_analysis.risk_level}</div>
-                        <div className="stat-label">AML Risk Level</div>
+                        <div className="stat-value">{finalDecision.risk_category}</div>
+                        <div className="stat-label">Final Risk Level</div>
                         <div className="stat-trend neutral">
-                          <span className="trend-text">Score: {(finalDecision.transaction_analysis.risk_score ?? 0).toFixed(1)}/10.0</span>
+                          <span className="trend-text">Score: {(finalDecision.risk_score ?? 0).toFixed(1)}/10.0</span>
                         </div>
                       </div>
                     </div>
@@ -736,20 +734,6 @@ function App() {
                     <Dashboard decision={finalDecision} onDecisionUpdate={setFinalDecision} />
                   </div>
                 )}
-                </div>
-                </div>
-                <div>
-                  {finalDecision ? (
-                    <RiskMeter score={finalDecision.risk_score} category={finalDecision.risk_category} />
-                  ) : (
-                    <div className="modern-card glass-effect bg-white/60 border-2 border-dashed border-gray-300 rounded-xl p-12 text-center h-full flex items-center justify-center">
-                      <div>
-                        <div className="text-gray-400 text-4xl mb-2 animate-pulse">📊</div>
-                        <p className="text-gray-500 text-sm font-medium">Risk score pending...</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
               </div>
             )}
           </div>

@@ -20,7 +20,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
       console.log(`🔄 [Dashboard] Resuming workflow with thread_id: ${threadId}, decision: ${overrideDecision}`);
       const response = await resumeProcessing(threadId, overrideDecision);
       console.log('✅ [Dashboard] Resume response:', response);
-      
+
       // Create updated decision with the override
       if (decision && onDecisionUpdate) {
         const updatedDecision: FinalDecision = {
@@ -48,7 +48,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
       setIsResolving(false);
     }
   };
-  
+
   if (!decision) {
     return (
       <div className="w-full">
@@ -115,6 +115,37 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
         </h2>
       </div>
 
+      <div className="mb-4 modern-card overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+        {/* Human Override Section - ESCALATE */}
+        {decision.decision === 'ESCALATE' && (
+          <div className="mt-6 p-4 bg-yellow-50 border border-orange-500/30 rounded-xl">
+            <h4 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-orange-500"></span>
+              </span>
+              Human Override Required
+            </h4>
+            <div className="flex gap-3">
+              <button
+                onClick={() => handleOverride('APPROVE')}
+                disabled={isResolving}
+                className="flex-1 py-2 bg-green-600/20 text-green-700 border border-green-500/30 rounded-lg hover:bg-green-600/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Force Approve
+              </button>
+              <button
+                onClick={() => handleOverride('REJECT')}
+                disabled={isResolving}
+                className="flex-1 py-2 bg-red-600/20 text-red-700 border border-red-500/30 rounded-lg hover:bg-red-600/40 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Final Reject
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       <div className={`modern-card rounded-xl border-2 ${colors.border} ${colors.bg} overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300`}>
         {/* Decision Header */}
         <div className={`px-6 py-5 ${colors.badge} text-white shadow-md`}>
@@ -158,7 +189,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
           </div>
 
           {/* Human Override Section - ESCALATE */}
-          {decision.decision === 'ESCALATE' && (
+          {/* {decision.decision === 'ESCALATE' && (
             <div className="mt-6 p-4 bg-orange-500/10 border border-orange-500/30 rounded-xl">
               <h4 className="text-orange-400 font-semibold mb-3 flex items-center gap-2">
                 <span className="relative flex h-3 w-3">
@@ -184,7 +215,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Transaction Analysis Section */}
           {decision.transaction_analysis && (
@@ -208,21 +239,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-gray-500 font-medium">Risk Level:</dt>
-                    <dd className={`text-lg font-bold mt-1 ${
-                      decision.transaction_analysis?.risk_level === 'HIGH' ? 'text-red-600' :
-                      decision.transaction_analysis?.risk_level === 'MEDIUM' ? 'text-yellow-600' :
-                      'text-green-600'
-                    }`}>
+                    <dt className="text-gray-500 font-medium">AML Risk Level:</dt>
+                    <dd className={`text-lg font-bold mt-1 ${decision.transaction_analysis?.risk_level === 'HIGH' ? 'text-red-600' :
+                        decision.transaction_analysis?.risk_level === 'MEDIUM' ? 'text-yellow-600' :
+                          'text-green-600'
+                      }`}>
                       {decision.transaction_analysis?.risk_level ?? 'N/A'}
                     </dd>
                   </div>
                 </dl>
-                {decision.transaction_analysis?.summary && (
+                {/* {decision.transaction_analysis?.summary && (
                   <p className="text-sm text-gray-700 leading-relaxed mt-3">
                     {decision.transaction_analysis.summary}
                   </p>
-                )}
+                )} */}
               </div>
             </div>
           )}
@@ -246,7 +276,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
                     } else {
                       displayValue = String(value ?? '');
                     }
-                    
+
                     return (
                       <div key={key}>
                         <dt className="text-gray-500 font-medium capitalize">

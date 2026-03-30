@@ -135,7 +135,7 @@ class DecisionAgent:
                              reasoning_conclusion: str, assessment: Dict) -> str:
         """Generate human-readable explanation"""
         explanation = f"**DECISION:** {decision}\n\n"
-        explanation += f"**Risk Assessment:**\n"
+        explanation += f"**Final Risk Assessment:**\n"
         explanation += f"• Risk Level: {risk_category}\n"
         explanation += f"• Risk Score: {assessment.get('risk_score', 0):.2f}/10\n\n"
         
