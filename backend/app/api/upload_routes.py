@@ -123,7 +123,49 @@ def parse_document_data(text: str, file_type: str) -> dict:
         date_matches = re.findall(date_pattern, text)
         if date_matches:
             extracted_fields["date_of_birth"] = date_matches[0].replace('/', '-')
-    
+    # DRIVER'S LICENSE SPECIFIC PARSING
+    elif doc_type == "DRIVERS_LICENSE":
+        # 1. Extract DL Number using Regex (e.g. KA0120230045678)
+        # Indian DLs typically start with 2 letters followed by 13 digits
+        dl_pattern = r'\b[A-Z]{2}[0-9]{13}\b'
+        dl_match = re.search(dl_pattern, text_upper)
+        if dl_match:
+            extracted_fields["id_number"] = dl_match.group()
+            
+        # 2. Extract DOB using Regex
+        date_pattern = r'\b\d{2}[/-]\d{2}[/-]\d{4}\b'
+        date_matches = re.findall(date_pattern, text)
+        if date_matches:
+            # Replace slashes with dashes to standardize format
+            extracted_fields["date_of_birth"] = date_matches[0].replace('/', '-')
+
+        # 3. Extract Name
+        # Heuristic: In Indian DLs, the Name is usually printed right above the "S/W/D of" line
+        for i, line in enumerate(lines):
+            if "S/W/D" in line.upper() and i > 0:
+                extracted_fields["name"] = lines[i - 1].title()
+                break
+        
+        # Fallback for name if "S/W/D" wasn't found but we found the DL number
+        if "name" not in extracted_fields and "id_number" in extracted_fields:
+            dl_num = extracted_fields["id_number"]
+            for i, line in enumerate(lines):
+                if dl_num in line and i + 1 < len(lines):
+                    potential_name = lines[i + 1].strip()
+                    # Verify the line contains letters (isn't another code)
+                    if any(char.isalpha() for char in potential_name):
+                        extracted_fields["name"] = potential_name.title()
+                        break
+
+        # 4. Extract Address
+        # Heuristic: The address usually appears right after the DOB line
+        if "date_of_birth" in extracted_fields:
+            dob = extracted_fields["date_of_birth"]
+            for i, line in enumerate(lines):
+                if dob in line and i + 1 < len(lines):
+                    extracted_fields["address"] = lines[i + 1].strip()
+                    break
+
     # GENERIC NAME EXTRACTION (fallback)
     else:
         for i, line in enumerate(lines):
