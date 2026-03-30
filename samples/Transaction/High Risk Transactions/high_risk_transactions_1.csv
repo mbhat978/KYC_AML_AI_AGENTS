@@ -1,0 +1,41 @@
+transaction_id,date,transaction_type,amount,currency,counterparty,counterparty_country,description,channel
+TXN001,1/5/2024,deposit,45000,INR,ABC Enterprises,India,Business Payment,branch
+TXN002,1/8/2024,withdrawal,8500,INR,Cash,India,ATM Withdrawal,atm
+TXN003,1/12/2024,transfer,95000,INR,XYZ Trading Co,India,Invoice Payment,online
+TXN004,1/15/2024,deposit,120000,INR,International Wire,Singapore,Consulting Fees,wire
+TXN005,1/18/2024,withdrawal,9500,INR,Cash,India,ATM Withdrawal,atm
+TXN006,1/20/2024,transfer,48000,INR,Real Estate Agency,India,Property Deposit,online
+TXN007,1/22/2024,withdrawal,9800,INR,Cash,India,Branch Withdrawal,branch
+TXN008,1/25/2024,deposit,9900,INR,Cash Deposit,India,Cash Deposit,branch
+TXN009,1/27/2024,transfer,85000,INR,Investment Firm,India,Mutual Fund Investment,online
+TXN010,1/29/2024,withdrawal,9700,INR,Cash,India,ATM Withdrawal,atm
+TXN011,2/1/2024,deposit,9500,INR,Cash Deposit,India,Cash Deposit,branch
+TXN012,2/3/2024,transfer,150000,INR,Legal Services,India,Professional Fees,online
+TXN013,2/5/2024,withdrawal,9600,INR,Cash,India,Branch Withdrawal,branch
+TXN014,2/8/2024,deposit,75000,INR,ABC Enterprises,India,Business Payment,wire
+TXN015,2/10/2024,transfer,220000,INR,Car Dealership,India,Vehicle Purchase,online
+TXN016,2/12/2024,deposit,9400,INR,Cash Deposit,India,Cash Deposit,branch
+TXN017,2/15/2024,withdrawal,50000,INR,Cash,India,Branch Withdrawal,branch
+TXN018,2/18/2024,transfer,180000,INR,International Wire,UAE,Business Services,wire
+TXN019,2/20/2024,deposit,9800,INR,Cash Deposit,India,Cash Deposit,branch
+TXN020,2/22/2024,withdrawal,9300,INR,Cash,India,ATM Withdrawal,atm
+TXN021,2/25/2024,transfer,95000,INR,Medical Services,India,Hospital Payment,online
+TXN022,2/27/2024,deposit,9900,INR,Cash Deposit,India,Cash Deposit,branch
+TXN023,3/1/2024,withdrawal,9200,INR,Cash,India,ATM Withdrawal,atm
+TXN024,3/3/2024,transfer,250000,INR,Property Developer,India,Real Estate Investment,online
+TXN025,3/5/2024,deposit,9700,INR,Cash Deposit,India,Cash Deposit,branch
+TXN026,3/8/2024,withdrawal,9500,INR,Cash,India,Branch Withdrawal,branch
+TXN027,3/10/2024,transfer,35000,INR,Insurance Company,India,Premium Payment,online
+TXN028,3/12/2024,deposit,125000,INR,International Wire,Hong Kong,Freelance Income,wire
+TXN029,3/15/2024,withdrawal,9800,INR,Cash,India,ATM Withdrawal,atm
+TXN030,3/18/2024,deposit,9600,INR,Cash Deposit,India,Cash Deposit,branch
+TXN031,3/20/2024,transfer,175000,INR,Equipment Supplier,India,Business Purchase,online
+TXN032,3/22/2024,withdrawal,9400,INR,Cash,India,Branch Withdrawal,branch
+TXN033,3/25/2024,deposit,9900,INR,Cash Deposit,India,Cash Deposit,branch
+TXN034,3/27/2024,transfer,45000,INR,Educational Institution,India,Tuition Payment,online
+TXN035,3/29/2024,withdrawal,9700,INR,Cash,India,ATM Withdrawal,atm
+TXN036,4/1/2024,deposit,200000,INR,International Wire,UK,Consulting Services,wire
+TXN037,4/3/2024,transfer,85000,INR,Technology Provider,India,Software License,online
+TXN038,4/5/2024,withdrawal,9500,INR,Cash,India,Branch Withdrawal,branch
+TXN039,4/8/2024,deposit,9800,INR,Cash Deposit,India,Cash Deposit,branch
+TXN040,4/10/2024,transfer,120000,INR,Construction Company,India,Contract Payment,online

@@ -50,23 +50,37 @@ class KYCServiceWithStreaming:
             yield self._format_sse_event({"session_id": session_id, "agent": "System", "step": "initialization", "status": "processing", "message": "🚀 Starting KYC/AML processing...", "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.3)
             
-            extracted_data = document.get('extracted_fields', {})
-            
+            # Show extraction in progress message
             yield self._format_sse_event({"session_id": session_id, "agent": "ExtractionAgent", "step": "extraction", "status": "processing", "message": "📄 Extracting identity information...", "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.2)
-            
-            yield self._format_sse_event({"session_id": session_id, "agent": "ExtractionAgent", "step": "extraction", "status": "completed", "message": f"✅ Extracted: {extracted_data.get('name', 'N/A')}", "timestamp": datetime.now().isoformat()})
-            await asyncio.sleep(0.3)
             
             # Send heartbeat before potentially long operation
             yield self._format_sse_event({"session_id": session_id, "agent": "System", "step": "heartbeat", "status": "processing", "message": "🔄 Processing with AI agents...", "timestamp": datetime.now().isoformat()})
             await asyncio.sleep(0.2)
             
             # Process document through real orchestrator in a thread to prevent blocking
-            # CRITICAL FIX: Wrap synchronous orchestrator call in asyncio.to_thread()
-            logger.info(f"Calling real orchestrator for {extracted_data.get('name', 'N/A')}")
+            # This is where the actual extraction happens for images via GPT-4o Vision
+            logger.info(f"Calling real orchestrator for document processing")
             result = await asyncio.to_thread(self.orchestrator.process_document, document)
             logger.info(f"Orchestrator result: {result.get('decision')} - Risk: {result.get('risk_score')}")
+            
+            # NOW we can get the actual extracted data from the result
+            extracted_data = result.get('extracted_data', {})
+            extracted_name = extracted_data.get('name', 'N/A')
+            extracted_doc_type = extracted_data.get('document_type', 'Document')
+            
+            logger.info(f"✅ Extracted name from result: {extracted_name}")
+            
+            # Show extraction complete with the ACTUAL extracted name
+            yield self._format_sse_event({
+                "session_id": session_id, 
+                "agent": "ExtractionAgent", 
+                "step": "extraction", 
+                "status": "completed", 
+                "message": f"✅ Extracted {extracted_doc_type}: {extracted_name}", 
+                "timestamp": datetime.now().isoformat()
+            })
+            await asyncio.sleep(0.3)
             
             # Add session_id to the result for frontend tracking
             result['session_id'] = session_id
@@ -144,9 +158,9 @@ class KYCServiceWithStreaming:
             logger.error(f"Streaming error: {str(e)}", exc_info=True)
             yield self._format_sse_event({"session_id": session_id, "agent": "System", "step": "error", "status": "error", "message": f"❌ Error: {str(e)}", "timestamp": datetime.now().isoformat()})
     
-    def _format_sse_event(self,  data: Dict[str, Any]) -> str:
+    def _format_sse_event(self, data: Dict[str, Any]) -> str:
         """Format data as SSE event"""
-        return f"data: {json.dumps(data)}\n\n"
+        return f" {json.dumps(data)}\n\n"
     
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """Get session status"""

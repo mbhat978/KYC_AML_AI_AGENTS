@@ -1,6 +1,6 @@
 {
   "database_name": "Government ID Database (Mock)",
-  "last_updated": "2026-03-18",
+  "last_updated": "2026-03-30",
   "records": [
     {
       "id_number": "ABCDE1234F",
@@ -23,7 +23,7 @@
     {
       "id_number": "K1234567",
       "id_type": "PASSPORT",
-      "name": "Jonathan David Miller",
+      "name": "Amit Kishore Patel",
       "date_of_birth": "1988-11-30",
       "address": "789 Baker Street, London, UK SW1A 1AA",
       "status": "active",
@@ -44,6 +44,38 @@
       "name": "Amit Verma",
       "date_of_birth": "1987-12-05",
       "address": "789 Residency Rd, Bangalore, Karnataka 560025",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "KA0120230045678",
+      "id_type": "DRIVERS_LICENSE",
+      "name": "Rajesh Kumar Sharma",
+      "date_of_birth": "1985-06-15",
+      "father_name": "Vijay Kumar Sharma",
+      "address": "123 MG Road, Bangalore, Karnataka 560001",
+      "state": "Karnataka",
+      "rto_code": "KA-01",
+      "blood_group": "B+",
+      "issue_date": "2023-03-15",
+      "expiry_date": "2043-03-14",
+      "vehicle_classes": ["LMV-NT", "MCWG"],
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "MH0220220034567",
+      "id_type": "DRIVERS_LICENSE",
+      "name": "Priya Patel",
+      "date_of_birth": "1990-03-22",
+      "father_name": "Ramesh Patel",
+      "address": "456 Park Street, Mumbai, Maharashtra 400001",
+      "state": "Maharashtra",
+      "rto_code": "MH-02",
+      "blood_group": "O+",
+      "issue_date": "2022-05-20",
+      "expiry_date": "2042-05-19",
+      "vehicle_classes": ["LMV-NT"],
       "status": "active",
       "verified": true
     }

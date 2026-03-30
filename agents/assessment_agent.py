@@ -60,9 +60,7 @@ class AssessmentAgent:
                 # Structuring is high risk
                 score += 3.5  # Brings base to 6.5
             
-            if aml_flags.get('high_velocity') and risk_level == 'HIGH':
-                score += 2.0
-            elif aml_flags.get('high_velocity'):
+            if aml_flags.get('high_velocity'):
                 score += 1.0
             
             if aml_flags.get('pep_match'):
@@ -155,12 +153,12 @@ class AssessmentAgent:
         if transaction_analysis:
             aml_flags = transaction_analysis.get('aml_flags', {})
             if aml_flags.get('sanctions_hit'):
-                factors.append("AML: Transaction involves sanctioned entity")
+                factors.append("CRITICAL: Transaction involves sanctioned entity")
             if aml_flags.get('pep_match'):
-                factors.append("AML: Transaction involves PEP")
+                factors.append("HIGH RISK: Transaction involves PEP")
             if aml_flags.get('high_velocity'):
-                factors.append("AML: High velocity transaction pattern")
+                factors.append("MEDIUM RISK: High velocity transaction pattern detected")
             if aml_flags.get('structuring_detected'):
-                factors.append("AML: Potential structuring detected")
+                factors.append("HIGH RISK: Potential structuring detected")
         
         return list(set(factors))  # Remove duplicates

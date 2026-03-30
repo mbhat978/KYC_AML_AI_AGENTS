@@ -642,7 +642,7 @@ function App() {
                     {/* Overall Decision */}
                     <div className={`stat-card-modern ${
                       finalDecision.decision === 'APPROVE' ? 'success' : 
-                      finalDecision.decision === 'REJECT' ? 'danger' : 'warning'
+                      finalDecision.decision === 'REJECT' ? 'warning' : 'warning'
                     }`}>
                       <div className="stat-icon-wrapper">
                         <div className="stat-icon">

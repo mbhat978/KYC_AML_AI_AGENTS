@@ -99,12 +99,12 @@ class ReasoningAgent:
                     # Intelligent reasoning: distinguish typos from real mismatches
                     if confidence_score > 0.75:
                         # Likely a variation (Jon vs Jonathan)
-                        risk_factors.append(f"Minor name variation detected (similarity: {confidence_score:.2f})")
+                        risk_factors.append(f"Minor name variation detected")
                         conclusion = "ACCEPT"
                         confidence = 0.75
                     elif confidence_score > 0.6:
                         # Ambiguous - need more data
-                        risk_factors.append(f"Name mismatch requires review (similarity: {confidence_score:.2f})")
+                        risk_factors.append(f"Name mismatch requires review")
                         should_reverify = reasoning_loops < settings.max_reasoning_loops
                         conclusion = "REQUEST_MORE_DATA" if should_reverify else "ESCALATE"
                         confidence = 0.5

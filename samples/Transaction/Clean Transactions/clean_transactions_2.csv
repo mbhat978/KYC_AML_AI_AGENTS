@@ -1,0 +1,24 @@
+transaction_id,date,type,amount,currency,description,counterparty,location,channel
+TXN396009,3/2/2026,Fund Transfer,16003.55,INR,Utility bill payment,Family Member,Bangalore,Online
+TXN350020,2/3/2026,Bill Payment,8303.41,INR,Monthly salary,Online Merchant,Kolkata,Mobile App
+TXN758825,3/2/2026,Salary Credit,24031.48,INR,Transfer to family member,XYZ Bank ATM,Bangalore,Mobile App
+TXN121945,3/4/2026,Online Shopping,22561.48,INR,Utility bill payment,Family Member,Chennai,Online
+TXN760381,3/4/2026,ATM Withdrawal,6206.5,INR,Transfer to family member,XYZ Bank ATM,Chennai,Online
+TXN464874,3/1/2026,Online Shopping,8760.61,INR,Monthly salary,Online Merchant,Bangalore,ATM
+TXN879031,1/20/2026,Salary Credit,19017.24,INR,Utility bill payment,XYZ Bank ATM,Bangalore,Mobile App
+TXN410458,3/3/2026,Salary Credit,20487.54,INR,Monthly salary,Online Merchant,Bangalore,ATM
+TXN904133,2/13/2026,Salary Credit,5895.79,INR,UPI payment to merchant,ABC Company Pvt Ltd,Bangalore,Mobile App
+TXN618638,1/8/2026,Fund Transfer,23571.22,INR,Transfer to family member,Online Merchant,Bangalore,Branch
+TXN319728,1/29/2026,UPI Payment,19743.04,INR,Online purchase,Utility Provider,Bangalore,Online
+TXN427402,2/18/2026,ATM Withdrawal,3991.08,INR,Transfer to family member,Online Merchant,Chennai,Online
+TXN285930,2/11/2026,ATM Withdrawal,5624.7,INR,ATM cash withdrawal,XYZ Bank ATM,Chennai,Online
+TXN633992,1/21/2026,UPI Payment,9336.13,INR,Transfer to family member,ABC Company Pvt Ltd,Chennai,ATM
+TXN258930,3/14/2026,UPI Payment,9801.51,INR,Utility bill payment,Utility Provider,Bangalore,Online
+TXN376968,1/3/2026,Salary Credit,13701.29,INR,Online purchase,ABC Company Pvt Ltd,Kolkata,Mobile App
+TXN837815,3/26/2026,Online Shopping,15491.56,INR,UPI payment to merchant,XYZ Bank ATM,Kolkata,ATM
+TXN952388,3/5/2026,Fund Transfer,19114.89,INR,Online purchase,Online Merchant,Bangalore,Mobile App
+TXN489973,2/4/2026,Fund Transfer,16566.83,INR,UPI payment to merchant,Utility Provider,Bangalore,ATM
+TXN514244,3/3/2026,Online Shopping,6042.09,INR,Monthly salary,Online Merchant,Bangalore,Online
+TXN315922,1/21/2026,UPI Payment,12960.68,INR,Monthly salary,XYZ Bank ATM,Kolkata,Branch
+TXN849451,2/10/2026,Fund Transfer,6421.19,INR,Transfer to family member,ABC Company Pvt Ltd,Bangalore,ATM
+TXN186887,1/26/2026,Bill Payment,11699.53,INR,ATM cash withdrawal,Utility Provider,Bangalore,Branch

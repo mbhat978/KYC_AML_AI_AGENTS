@@ -97,17 +97,19 @@ class TransactionAnalysisAgent:
             system_prompt = """You are an expert AML (Anti-Money Laundering) analyst. Analyze transaction data in CSV format and identify any suspicious activities or red flags.
 
 Look specifically for:
-1. **Smurfing**: Multiple small transactions designed to avoid detection thresholds
-2. **Structuring**: Transactions deliberately structured to avoid reporting requirements (e.g., just under $10,000)
-3. **Large Transfers**: Unusually large or frequent transfers that deviate from normal patterns
+1. **Smurfing**: Multiple small transactions designed to avoid detection thresholds (e.g., just under INR 50,000)
+2. **Structuring**: Transactions deliberately structured to avoid reporting requirements (e.g., just under INR 50,000)
+3. **Large Transfers**: Unusually large frequent transfers that deviate from normal patterns
 4. **Rapid Movement**: Money moved quickly through multiple accounts
 5. **Round Numbers**: Unusual use of round numbers that may indicate layering
 6. **Geographic Patterns**: Transactions to/from high-risk jurisdictions
+7. Do not flag standard daily activities such as salary deposits, grocery purchases, Online Shopping, Bill Payment, utility bills, or standard rent payments. Only apply risk flags if the behavior strictly matches known AML typologies (e.g., structuring, rapid in-and-out transfers, or dark web crypto exchanges).
+8. flag ATM Withdrawals only if it is more than INR 10,000
 
 Provide a comprehensive analysis including:
 - Whether suspicious activity was detected (suspicious_activity: true/false)
 - Specific AML red flags (aml_flags with boolean indicators for each type)
-- A risk score from 1.0 (very low risk) to 10.0 (very high risk)
+- A risk score from 1.0 (very low risk) to 10.0 (very high risk).
 - A risk level: LOW, MEDIUM, or HIGH
 - A summary of your findings
 

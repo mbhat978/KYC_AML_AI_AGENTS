@@ -1,0 +1,23 @@
+transaction_id,date,type,amount,currency,description,counterparty,location,channel
+TXN443111,3/6/2026,Online Shopping,2854.96,INR,Monthly salary,Utility Provider,Bangalore,Branch
+TXN573789,2/12/2026,Bill Payment,3940.54,INR,Transfer to family member,XYZ Bank ATM,Bangalore,Online
+TXN758149,1/22/2026,ATM Withdrawal,173.6,INR,ATM cash withdrawal,Online Merchant,Bangalore,Online
+TXN678667,1/27/2026,UPI Payment,2428.99,INR,ATM cash withdrawal,XYZ Bank ATM,Chennai,Online
+TXN605993,1/4/2026,ATM Withdrawal,7430.69,INR,Utility bill payment,ABC Company Pvt Ltd,Chennai,ATM
+TXN275148,3/17/2026,Salary Credit,6369.37,INR,Utility bill payment,Utility Provider,Bangalore,ATM
+TXN746412,1/23/2026,Bill Payment,6365.08,INR,Online purchase,Online Merchant,Chennai,ATM
+TXN921906,12/29/2025,Salary Credit,3182.67,INR,Utility bill payment,Online Merchant,Bangalore,Online
+TXN468292,3/4/2026,ATM Withdrawal,3448.49,INR,ATM cash withdrawal,Utility Provider,Bangalore,ATM
+TXN389137,2/10/2026,Online Shopping,527.37,INR,Utility bill payment,ABC Company Pvt Ltd,Kolkata,Mobile App
+TXN724164,2/14/2026,Online Shopping,3086.24,INR,Monthly salary,Online Merchant,Kolkata,Mobile App
+TXN266250,1/18/2026,Bill Payment,3589.39,INR,Online purchase,ABC Company Pvt Ltd,Bangalore,ATM
+TXN950553,2/25/2026,Salary Credit,4520.5,INR,Online purchase,Online Merchant,Kolkata,ATM
+TXN552607,12/30/2025,Bill Payment,1068.12,INR,Online purchase,Online Merchant,Kolkata,Mobile App
+TXN842420,2/26/2026,ATM Withdrawal,7987.27,INR,Monthly salary,Utility Provider,Kolkata,Branch
+TXN322937,1/18/2026,Salary Credit,961.08,INR,Transfer to family member,Utility Provider,Kolkata,ATM
+TXN999569,2/12/2026,Bill Payment,2735.45,INR,Monthly salary,Utility Provider,Bangalore,Branch
+TXN367928,1/8/2026,Fund Transfer,1572.48,INR,Monthly salary,XYZ Bank ATM,Kolkata,Mobile App
+TXN125708,2/21/2026,Bill Payment,3124.1,INR,Transfer to family member,ABC Company Pvt Ltd,Kolkata,ATM
+TXN779482,3/9/2026,Fund Transfer,3573.79,INR,Online purchase,XYZ Bank ATM,Kolkata,Online
+TXN639649,3/13/2026,Online Shopping,7953.64,INR,ATM cash withdrawal,Family Member,Bangalore,Branch
+TXN777685,1/21/2026,UPI Payment,2944.85,INR,Online purchase,Online Merchant,Kolkata,ATM

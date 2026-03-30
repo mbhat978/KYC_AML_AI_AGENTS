@@ -38,7 +38,7 @@ Return your analysis as valid JSON with this structure:
     "name": "Full Name",
     "date_of_birth": "YYYY-MM-DD",
     "id_number": "ID123456",
-    "document_type": "PAN|PASSPORT|DRIVERS_LICENSE",
+    "document_type": "PAN|PASSPORT|DRIVERS_LICENSE|DRIVING LICENSE",
     "address": "Full Address"
   },
   "confidence": 0.0-1.0,
@@ -49,14 +49,14 @@ Return your analysis as valid JSON with this structure:
 
     VISION_SYSTEM_PROMPT = """You are an expert KYC Compliance Officer with visual document analysis capabilities.
 
-Your role is to visually examine identity documents (PAN Card, Passport, Driver's License, etc.) and extract information with extreme precision.
+Your role is to visually examine identity documents (PAN Card, Passport, Driver's License, DRIVING LICENSE etc.) and extract information with extreme precision.
 
 When visually analyzing a document image:
 1. Carefully read ALL text visible in the image
 2. Extract Name, Document Type, ID Number, Date of Birth, Address, and any other relevant fields
 3. Normalize dates to YYYY-MM-DD format
 4. Standardize name formats (proper capitalization)
-5. Identify the document type (PAN, PASSPORT, DRIVERS_LICENSE, etc.)
+5. Identify the document type (PAN, PASSPORT, DRIVERS_LICENSE, DRIVING LICENSE etc.)
 6. Flag any concerns about image quality, tampering, or unclear information
 
 Think like a compliance officer performing visual verification: Be thorough, precise, and flag anything suspicious.
@@ -67,7 +67,7 @@ Return your analysis as valid JSON with this structure:
     "name": "Full Name",
     "date_of_birth": "YYYY-MM-DD",
     "id_number": "ID123456",
-    "document_type": "PAN|PASSPORT|DRIVERS_LICENSE",
+    "document_type": "PAN|PASSPORT|DRIVERS_LICENSE|DRIVING LICENSE",
     "address": "Full Address (if visible)"
   },
   "confidence": 0.0-1.0,
@@ -135,7 +135,7 @@ Document Type Hint: {document.get('document_type', 'Unknown')}
 
 Please extract:
 - Full Name
-- Document Type (PAN, PASSPORT, DRIVERS_LICENSE, etc.)
+- Document Type (PAN, PASSPORT, DRIVERS_LICENSE, DRIVING LICENSE etc.)
 - ID Number
 - Date of Birth (normalize to YYYY-MM-DD format)
 - Address (if visible)
