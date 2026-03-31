@@ -126,7 +126,6 @@ AI-AGENTS/
 ├── .env.example                      # Environment template
 ├── .gitignore
 ├── README.md                         # Main project documentation
-├── PROJECT_SUMMARY.md
 ├── QUICK_START.md
 ├── INSTALLATION_GUIDE.md
 ├── TESTING_GUIDE.md
@@ -649,7 +648,6 @@ run_app.bat
 - **TESTING_GUIDE.md**: Testing procedures and examples
 - **CONFIDENCE_SCORES_EXPLAINED.md**: Understanding confidence metrics
 - **RISK_SAMPLES_GUIDE.md**: Sample documents and expected outcomes
-- **PROJECT_SUMMARY.md**: High-level project summary
 
 ---
 
