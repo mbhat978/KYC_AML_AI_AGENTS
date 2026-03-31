@@ -71,7 +71,7 @@ The system follows an agentic workflow:
 
 1. **Extract**: Parse document and extract structured data
 2. **Verify**: Cross-check against multiple sources
-3. **Transaction Verify**: Analyze Transaction CSV if any and checkes for AML flags
+3. **Transactions Verify**: Analyze Transaction CSV if any and checkes for AML flags
 3. **Reason**: Analyze discrepancies and decide if re-verification needed
 4. **Assess**: Assign dynamic risk scores
 5. **Decide**: Make final decision with full explainability
@@ -93,17 +93,9 @@ The key innovation is the **reasoning loop**: if mismatches are found, the syste
 pytest tests/
 ```
 
-### Adding New Agents
-
-See `docs/adding_agents.md` for guidelines on extending the system.
-
-## 📝 License
-
-MIT License
-
 ## 🤝 Contributing
 
-Contributions welcome! Please read CONTRIBUTING.md first.
+Contributions welcome!
 
 ---
 
