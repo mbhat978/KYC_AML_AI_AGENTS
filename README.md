@@ -41,7 +41,7 @@ This system implements an **Agentic AI approach** where multiple specialized age
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd AI-AGENTS
+cd KYC-AML-Multi-Agentic-AI-System
 
 # Create virtual environment
 python -m venv venv
