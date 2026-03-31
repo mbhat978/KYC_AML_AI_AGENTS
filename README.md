@@ -3,8 +3,8 @@
 A production-ready, intelligent KYC/AML compliance system powered by multi-agent AI architecture. This system demonstrates true reasoning capabilities, not just sequential automation.
 
 ## 🎯 Team Members
-**Name**: Manisha Bhattacharjee
-**IBM Email ID**: Manisha.Bhattacharjee@ibm.com
+- **Name**: Manisha Bhattacharjee
+- **IBM Email ID**: Manisha.Bhattacharjee@ibm.com
 
 ## 🎯 Overview
 
@@ -19,6 +19,7 @@ This system implements an **Agentic AI approach** where multiple specialized age
 - ✅ **StateGraph Implementation**: Multi-agent AI workflow using LangGraph orchestration
 - ✅ **Agent Live Feed**: Real-time processing updates via Server-Sent Events (SSE)
 - ✅ **OCR Capabilities**: Document extraction (PDF, Images)
+- ✅ **KYC**: Identity Verification
 - ✅ **Enhanced Due Diligence**: Transaction monitoring and AML analysis
 - ✅ **Human-In-Loop**: Automated decision-making with escalation paths
 - ✅ **Modern Web Interface**: Interactive web interface with live agent feedback
