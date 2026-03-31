@@ -63,14 +63,6 @@ npm run dev
    - All agents process sequentially
    - Final decision rendered
 
-### Test 4: Drag-and-Drop Custom JSON
-
-1. Create a custom JSON file with KYC data
-2. Drag and drop onto upload zone
-3. **Expected Results:**
-   - Custom document processed
-   - Risk assessment based on provided data
-
 ## 📊 What to Observe
 
 ### Live Feed Should Show:

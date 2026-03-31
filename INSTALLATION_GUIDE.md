@@ -323,40 +323,6 @@ chmod +x run_app.sh
 
 ---
 
-## 📁 Project Structure
-
-```
-AI-AGENTS/
-├── backend/                    # FastAPI Backend
-│   ├── app/
-│   │   ├── main.py            # Application entry
-│   │   ├── api/               # API routes
-│   │   ├── services/          # Business logic
-│   │   ├── models/            # Data models
-│   │   └── middleware/        # CORS, etc.
-│   ├── requirements.txt       # Python dependencies
-│   └── README.md
-│
-├── frontend/                   # React Frontend
-│   ├── src/
-│   │   ├── components/        # React components
-│   │   ├── services/          # API clients
-│   │   ├── types/             # TypeScript types
-│   │   └── App.tsx            # Main app
-│   ├── package.json           # Node dependencies
-│   └── vite.config.ts         # Vite configuration
-│
-├── agents/                     # AI Agents
-├── orchestrator/               # Orchestration
-├── samples/                    # Test documents
-├── mock_data/                  # Mock databases
-├── .env.example                # Environment template
-├── run_app.bat                 # Windows launcher
-└── run_app.sh                  # Linux/Mac launcher
-```
-
----
-
 ## 🎯 Next Steps After Installation
 
 1. **Review Documentation**:
@@ -429,10 +395,8 @@ npm run lint
 
 If you encounter issues not covered here:
 
-1. Check the **TESTING_GUIDE.md** for common issues
-2. Review the **BACKEND_COMPLETE.md** for backend details
-3. Check **FRONTEND_COMPLETE.md** for frontend specifics
-4. Look at **PROJECT_SUMMARY.md** for architecture overview
+1. Check the **RISK_SAMPLES_GUIDE.md** for Testing
+2. Look at **FULLSTACK_ARCHITECTURE.md** for architecture overview
 
 ---
 
