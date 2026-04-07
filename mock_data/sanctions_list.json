@@ -9,9 +9,10 @@
       "date_of_birth": "1965-04-12",
       "nationality": "RU",
       "id_numbers": ["XX1234567"],
-      "reason": "Financial crimes",
+      "reason": "Financial crimes - Large-scale money laundering through shell companies, tax evasion, and embezzlement of state funds",
       "listed_date": "2022-03-15",
-      "severity": "HIGH"
+      "severity": "HIGH",
+      "crime_details": "Involved in laundering over $500M through offshore accounts. Created network of shell companies to hide assets. Connected to organized crime networks."
     },
     {
       "name": "Maria Santos",
@@ -19,9 +20,10 @@
       "date_of_birth": "1978-09-23",
       "nationality": "VE",
       "id_numbers": [],
-      "reason": "Money laundering",
+      "reason": "Money laundering - Drug cartel financial operations, wire fraud, and international money laundering conspiracy",
       "listed_date": "2021-11-08",
-      "severity": "HIGH"
+      "severity": "HIGH",
+      "crime_details": "Key financial operative for international drug trafficking organization. Laundered proceeds from narcotics trafficking through legitimate businesses and cryptocurrency."
     },
     {
       "name": "Ahmed Hassan",
@@ -29,9 +31,10 @@
       "date_of_birth": "1970-01-30",
       "nationality": "SY",
       "id_numbers": ["YY9876543"],
-      "reason": "Terrorism financing",
+      "reason": "Terrorism financing - Providing material support to designated terrorist organizations, facilitating terrorist attacks",
       "listed_date": "2020-06-22",
-      "severity": "CRITICAL"
+      "severity": "CRITICAL",
+      "crime_details": "Facilitated financial transfers to terrorist groups. Operated funding networks across multiple countries. Involved in planning and financing terrorist operations."
     }
   ]
 }

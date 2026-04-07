@@ -90,29 +90,82 @@ class ReasoningAgent:
                     risk_factors.append("MEDIUM RISK: PEP match detected")
                     conclusion = "ESCALATE"
                     confidence = 0.6  # Higher confidence for former/medium PEP
-            # Handle name mismatches intelligently
+            # Handle mismatches intelligently (name, DOB, address)
             elif verification_status == "PARTIAL":
                 gov_match = matches.get('government_db', {})
                 if gov_match.get('status') == 'mismatch':
                     confidence_score = gov_match.get('confidence', 0.0)
                     
-                    # Intelligent reasoning: distinguish typos from real mismatches
-                    if confidence_score > 0.75:
-                        # Likely a variation (Jon vs Jonathan)
-                        risk_factors.append(f"Minor name variation detected")
-                        conclusion = "ACCEPT"
-                        confidence = 0.75
-                    elif confidence_score > 0.6:
-                        # Ambiguous - need more data
-                        risk_factors.append(f"Name mismatch requires review")
-                        should_reverify = reasoning_loops < settings.max_reasoning_loops
-                        conclusion = "REQUEST_MORE_DATA" if should_reverify else "ESCALATE"
-                        confidence = 0.5
-                    else:
-                        # Significant mismatch
-                        risk_factors.append("Significant name mismatch detected")
+                    # Analyze specific discrepancies
+                    has_name_mismatch = False
+                    has_dob_mismatch = False
+                    has_address_mismatch = False
+                    
+                    # Check discrepancies from government DB match
+                    gov_discrepancies = gov_match.get('discrepancies', [])
+                    for disc in gov_discrepancies:
+                        disc_lower = str(disc).lower()
+                        if 'name mismatch' in disc_lower:
+                            has_name_mismatch = True
+                        elif 'dob mismatch' in disc_lower or 'date of birth' in disc_lower:
+                            has_dob_mismatch = True
+                        elif 'address mismatch' in disc_lower:
+                            has_address_mismatch = True
+                    
+                    # Also check top-level discrepancies
+                    for disc in discrepancies:
+                        disc_lower = str(disc).lower()
+                        if 'dob mismatch' in disc_lower or 'date of birth' in disc_lower:
+                            if not has_dob_mismatch:
+                                has_dob_mismatch = True
+                                risk_factors.append(f"DOB mismatch detected")
+                        elif 'address mismatch' in disc_lower:
+                            if not has_address_mismatch:
+                                has_address_mismatch = True
+                                risk_factors.append(f"Address mismatch detected")
+                        elif 'name mismatch' in disc_lower:
+                            if not has_name_mismatch:
+                                has_name_mismatch = True
+                                risk_factors.append(f"Name mismatch detected")
+                    
+                    # Determine severity based on type of mismatches
+                    mismatch_count = sum([has_name_mismatch, has_dob_mismatch, has_address_mismatch])
+                    
+                    if mismatch_count >= 2:
+                        # Multiple mismatches - high risk
+                        conclusion = "REJECT"
+                        confidence = 0.2
+                        logger.warning(f"Multiple field mismatches detected ({mismatch_count} fields)")
+                    elif has_dob_mismatch:
+                        # DOB mismatch is critical
                         conclusion = "ESCALATE"
                         confidence = 0.3
+                        logger.warning("DOB mismatch detected - escalating")
+                    elif has_address_mismatch:
+                        # Address mismatch - needs review
+                        conclusion = "ESCALATE"
+                        confidence = 0.4
+                        logger.warning("Address mismatch detected - escalating")
+                    elif has_name_mismatch:
+                        # Name mismatch only - use confidence score
+                        if confidence_score > 0.75:
+                            # Likely a variation (Jon vs Jonathan)
+                            conclusion = "ESCALATE"
+                            confidence = 0.75
+                        elif confidence_score > 0.6:
+                            # Ambiguous - need more data
+                            should_reverify = reasoning_loops < settings.max_reasoning_loops
+                            conclusion = "REQUEST_MORE_DATA" if should_reverify else "ESCALATE"
+                            confidence = 0.5
+                        else:
+                            # Significant name mismatch
+                            conclusion = "ESCALATE"
+                            confidence = 0.3
+                    else:
+                        # No specific mismatch identified but status is partial
+                        risk_factors.append("Partial verification - unspecified discrepancy")
+                        conclusion = "ESCALATE"
+                        confidence = 0.5
                 else:
                     risk_factors.append("Partial verification")
                     conclusion = "ESCALATE"
@@ -180,10 +233,17 @@ class ReasoningAgent:
             analysis += "--------------------------------\n"
         
         matches = verification_result.get('matches', {})
-        if matches.get('government_db', {}).get('status') == 'match':
+        gov_match = matches.get('government_db', {})
+        if gov_match.get('status') == 'match':
             analysis += "- Government DB: ✓ Verified\n"
-        elif matches.get('government_db', {}).get('status') == 'mismatch':
-            analysis += "- Government DB: ⚠ Name variation detected\n"
+        elif gov_match.get('status') == 'mismatch':
+            analysis += "- Government DB: ⚠ Mismatches detected\n"
+            # List specific discrepancies
+            gov_discrepancies = gov_match.get('discrepancies', [])
+            if gov_discrepancies:
+                analysis += "  Discrepancies:\n"
+                for disc in gov_discrepancies:
+                    analysis += f"  • {disc}\n"
         else:
             analysis += "- Government DB: ✗ Not found\n"
         

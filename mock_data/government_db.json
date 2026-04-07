@@ -6,8 +6,35 @@
       "id_number": "ABCDE1234F",
       "id_type": "PAN",
       "name": "Rajesh Kumar Sharma",
-      "date_of_birth": "1985-06-15",
+      "date_of_birth": "1985-03-15",
       "address": "123 MG Road, Bangalore, Karnataka 560001",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "FGHIJ5678K",
+      "id_type": "PAN",
+      "name": "Priya Singh",
+      "date_of_birth": "1992-07-22",
+      "address": "456 Park Street, Mumbai, Maharashtra 400001",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "KLMNO9012P",
+      "id_type": "PAN",
+      "name": "Amit Patel",
+      "date_of_birth": "1988-11-10",
+      "address": "Mumbai, India",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "N7654321",
+      "id_type": "PASSPORT",
+      "name": "Priya Singh",
+      "date_of_birth": "1992-07-22",
+      "address": "456 Park Street, Mumbai, Maharashtra 400001",
       "status": "active",
       "verified": true
     },
@@ -21,11 +48,29 @@
       "verified": true
     },
     {
+      "id_number": "M1234567",
+      "id_type": "PASSPORT",
+      "name": "Rajesh Kumar Sharma",
+      "date_of_birth": "1985-03-15",
+      "address": "123 MG Road, Bangalore, Karnataka 560001",
+      "status": "active",
+      "verified": true
+    },
+    {
       "id_number": "K1234567",
       "id_type": "PASSPORT",
       "name": "Amit Kishore Patel",
+      "date_of_birth": "1988-03-10",
+      "address": "Mumbai, India",
+      "status": "active",
+      "verified": true
+    },
+    {
+      "id_number": "M9876543",
+      "id_type": "PASSPORT",
+      "name": "Sneha Reddy",
       "date_of_birth": "1988-11-30",
-      "address": "789 Baker Street, London, UK SW1A 1AA",
+      "address": "456 Park Street, Kolkata, West Bengal 700137",
       "status": "active",
       "verified": true
     },

@@ -24,7 +24,7 @@ class ExtractionAgent:
 Your role is to extract identity information from documents with extreme precision.
 
 When reviewing a document:
-1. Extract ALL relevant fields (Name, DOB, ID Number, Address, etc.)
+1. Extract ALL relevant fields (Name, Given Names, Surname, DOB, ID Number, Address etc.)
 2. Normalize dates to YYYY-MM-DD format
 3. Standardize name formats (proper capitalization)
 4. Flag any unclear or ambiguous information
@@ -53,11 +53,15 @@ Your role is to visually examine identity documents (PAN Card, Passport, Driver'
 
 When visually analyzing a document image:
 1. Carefully read ALL text visible in the image
-2. Extract Name, Document Type, ID Number, Date of Birth, Address, and any other relevant fields
+2. Extract Name, Given Names, Surname, Document Type, ID Number, Date of Birth, Address and any other relevant fields
 3. Normalize dates to YYYY-MM-DD format
 4. Standardize name formats (proper capitalization)
 5. Identify the document type (PAN, PASSPORT, DRIVERS_LICENSE, DRIVING LICENSE etc.)
 6. Flag any concerns about image quality, tampering, or unclear information
+
+IMPORTANT: Extract field values ONLY, without their labels. For example:
+- WRONG: "Place of Birth: Mumbai, India"
+- CORRECT: "Mumbai, India"
 
 Think like a compliance officer performing visual verification: Be thorough, precise, and flag anything suspicious.
 

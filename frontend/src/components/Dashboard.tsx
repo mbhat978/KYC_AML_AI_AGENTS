@@ -217,6 +217,77 @@ export const Dashboard: React.FC<DashboardProps> = ({ decision, onDecisionUpdate
             </div>
           )} */}
 
+          {/* Verification Details Section - PEP/Sanctions */}
+          {(() => {
+            // Extract verification data from workflow_log
+            const verificationData = decision.audit_trail?.workflow_log?.find(
+              (log: any) => log.step === 'verification'
+            )?.result;
+            
+            if (!verificationData?.matches) return null;
+            
+            const pepMatch = verificationData.matches.pep;
+            const sanctionsMatch = verificationData.matches.sanctions;
+            
+            return (
+            <div className="animate-[slideIn_0.73s_ease-out]">
+              <h4 className={`text-sm font-bold ${colors.text} mb-3 flex items-center gap-2 uppercase tracking-wide`}>
+                <span>🔐</span>
+                Verification Details
+              </h4>
+              <div className="bg-white/80 p-5 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 backdrop-blur-sm space-y-4">
+                {/* PEP Match Details */}
+                {pepMatch?.status === 'flagged' && (
+                  <div className="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-r-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">👤</span>
+                      <div className="flex-1">
+                        <h5 className="font-bold text-yellow-800 mb-2">Politically Exposed Person (PEP) Detected</h5>
+                        <div className="space-y-1 text-sm text-yellow-900">
+                          <p><strong>Position:</strong> {pepMatch.position}</p>
+                          <p><strong>Country:</strong> {pepMatch.country}</p>
+                          <p><strong>Risk Level:</strong> <span className={`font-semibold ${pepMatch.risk_level === 'HIGH' ? 'text-red-600' : 'text-yellow-600'}`}>{pepMatch.risk_level}</span></p>
+                          <p className="mt-2 text-yellow-800 bg-yellow-100 p-2 rounded">{pepMatch.note}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Sanctions Match Details */}
+                {sanctionsMatch?.status === 'flagged' && (
+                  <div className="p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg">
+                    <div className="flex items-start gap-3">
+                      <span className="text-2xl">🚫</span>
+                      <div className="flex-1">
+                        <h5 className="font-bold text-red-800 mb-2">Sanctions List Match Detected</h5>
+                        <div className="space-y-1 text-sm text-red-900">
+                          <p><strong>Reason:</strong> {sanctionsMatch.reason}</p>
+                          <p><strong>Severity:</strong> <span className={`font-semibold ${sanctionsMatch.severity === 'CRITICAL' ? 'text-red-700' : 'text-orange-600'}`}>{sanctionsMatch.severity}</span></p>
+                          <p className="mt-2 text-red-800 bg-red-100 p-2 rounded font-semibold">{sanctionsMatch.note}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Clear Status */}
+                {pepMatch?.status === 'clear' && sanctionsMatch?.status === 'clear' && (
+                  <div className="p-4 bg-green-50 border-l-4 border-green-500 rounded-r-lg">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">✅</span>
+                      <div>
+                        <h5 className="font-bold text-green-800">No PEP or Sanctions Flags</h5>
+                        <p className="text-sm text-green-700 mt-1">Identity cleared on all watchlists</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            );
+          })()}
+
           {/* Transaction Analysis Section */}
           {decision.transaction_analysis && (
             <div className="animate-[slideIn_0.75s_ease-out]">

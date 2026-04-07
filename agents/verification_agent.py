@@ -22,22 +22,106 @@ from utils.llm_client import get_llm_client
 # ============================================================================
 
 @tool
-def search_government_db(name: str, id_number: str) -> dict:
-    """Search the Government Database for identity verification. Use this to verify if a person's identity exists in official records. Args: name (full name), id_number (government ID). Returns dict with found, record, match_confidence, note."""
+def search_government_db(name: str, id_number: str, dob: str = None, address: str = None) -> dict:
+    """Search the Government Database for identity verification and compare fields. Use this to verify if a person's identity exists in official records and check for DOB/address mismatches. Args: name (full name), id_number (government ID), dob (date of birth), address (residential address). Returns dict with found, record, match_confidence, discrepancies, note."""
     mock_data_dir = os.path.join(os.path.dirname(__file__), '..', 'mock_data')
     db_path = os.path.join(mock_data_dir, 'government_db.json')
+    
+    def normalize_date(date_str):
+        """Convert various date formats to YYYY-MM-DD for comparison"""
+        if not date_str:
+            return None
+        # Handle DD-MM-YYYY format
+        if '-' in date_str and len(date_str.split('-')[0]) <= 2:
+            parts = date_str.split('-')
+            if len(parts) == 3:
+                return f"{parts[2]}-{parts[1].zfill(2)}-{parts[0].zfill(2)}"
+        # Handle DD/MM/YYYY format
+        if '/' in date_str and len(date_str.split('/')[0]) <= 2:
+            parts = date_str.split('/')
+            if len(parts) == 3:
+                return f"{parts[2]}-{parts[1].zfill(2)}-{parts[0].zfill(2)}"
+        return date_str
+    
+    def compare_addresses(addr1, addr2):
+        """Compare two addresses with fuzzy matching"""
+        if not addr1 or not addr2:
+            return True, 1.0  # If either missing, assume match
+        
+        addr1_norm = addr1.lower().replace(',', ' ').replace('  ', ' ').strip()
+        addr2_norm = addr2.lower().replace(',', ' ').replace('  ', ' ').strip()
+        
+        # Exact match
+        if addr1_norm == addr2_norm:
+            return True, 1.0
+        
+        # Check if major components match (street, city, state, pin)
+        addr1_words = set(addr1_norm.split())
+        addr2_words = set(addr2_norm.split())
+        common_words = addr1_words.intersection(addr2_words)
+        
+        if len(common_words) >= 3:  # At least 3 common words suggests same location
+            similarity = len(common_words) / max(len(addr1_words), len(addr2_words))
+            return True, similarity
+        
+        return False, 0.0
     
     try:
         with open(db_path, 'r') as f:
             db = json.load(f)
-            for record in db.get('records', []):
-                if (record.get('name', '').lower() == name.lower() and record.get('id_number', '') == id_number):
-                    logger.info(f"✅ Government DB: Exact match for {name}")
-                    return {'found': True, 'record': record, 'match_confidence': 1.0, 'note': 'Exact match'}
+            
+            # First try exact name and ID match
             for record in db.get('records', []):
                 if record.get('id_number', '') == id_number:
-                    logger.info(f"⚠️ Government DB: ID matched but name differs")
-                    return {'found': True, 'record': record, 'match_confidence': 0.9, 'note': f"ID matched, name differs: '{record.get('name')}' vs '{name}'"}
+                    discrepancies = []
+                    
+                    # Check name match
+                    name_match = record.get('name', '').lower() == name.lower()
+                    if not name_match:
+                        discrepancies.append(f"Name mismatch: DB has '{record.get('name')}' but document shows '{name}'")
+                    
+                    # Check DOB if provided
+                    dob_match = True
+                    if dob and record.get('date_of_birth'):
+                        db_dob_norm = normalize_date(record.get('date_of_birth'))
+                        doc_dob_norm = normalize_date(dob)
+                        if db_dob_norm != doc_dob_norm:
+                            dob_match = False
+                            discrepancies.append(f"DOB mismatch: DB has '{record.get('date_of_birth')}' but document shows '{dob}'")
+                            logger.warning(f"⚠️ DOB MISMATCH: DB={record.get('date_of_birth')} vs DOC={dob}")
+                    
+                    # Check address if provided
+                    address_match = True
+                    address_confidence = 1.0
+                    if address and record.get('address') and address != "none" and address != "Unknown":
+                        address_match, address_confidence = compare_addresses(record.get('address'), address)
+                        if not address_match:
+                            discrepancies.append(f"Address mismatch: DB has '{record.get('address')}' but document shows '{address}'")
+                            logger.warning(f"⚠️ ADDRESS MISMATCH: DB={record.get('address')} vs DOC={address}")
+                        elif address_confidence < 1.0:
+                            logger.info(f"✓ Address fuzzy match with {address_confidence:.2f} confidence")
+                    
+                    # Calculate overall match confidence
+                    if discrepancies:
+                        match_confidence = min(0.5, address_confidence * 0.5)  # Low confidence if discrepancies
+                        logger.warning(f"⚠️ Government DB: ID found but {len(discrepancies)} discrepanc{'y' if len(discrepancies) == 1 else 'ies'} detected")
+                        return {
+                            'found': True,
+                            'record': record,
+                            'match_confidence': match_confidence,
+                            'discrepancies': discrepancies,
+                            'note': f"ID matched but field mismatches detected: {', '.join(discrepancies[:2])}"
+                        }
+                    else:
+                        logger.info(f"✅ Government DB: Perfect match for {name}")
+                        return {
+                            'found': True,
+                            'record': record,
+                            'match_confidence': 1.0,
+                            'discrepancies': [],
+                            'note': 'All fields match perfectly'
+                        }
+            
     except Exception as e:
         logger.error(f"❌ Government DB error: {str(e)}")
         return {'found': False, 'error': str(e)}
@@ -185,22 +269,25 @@ class VerificationAgent:
         
         # System prompt for autonomous verification
         system_prompt = """You are an autonomous KYC Verification Agent. You MUST:
-1. Use search_government_db to verify the identity in official records
+1. Use search_government_db to verify the identity in official records - IMPORTANT: Pass name, id_number, dob, AND address parameters to detect mismatches
 2. Use search_sanctions_list to check for sanctions/watchlist matches  
 3. Use search_pep_list to check for Politically Exposed Person status
 
-Be thorough and autonomous. If a search returns 'Not Found', try variations before concluding.
+Be thorough and autonomous. When calling search_government_db, ALWAYS include the dob and address parameters for field comparison.
 
 After using all three tools, provide a final summary with:
-- verification_status: "VERIFIED" if gov DB found and no sanctions/PEP issues, "FAILED" if not in gov DB, "FLAGGED" if sanctions/PEP hit
-- confidence: 0.0-1.0 based on match quality
+- verification_status: "VERIFIED" if gov DB found with no field mismatches and no sanctions/PEP issues, "FAILED" if not in gov DB, "FLAGGED" if sanctions/PEP hit OR field mismatches detected
+- confidence: 0.0-1.0 based on match quality and field discrepancies
 - Summary of findings from all three databases"""
         
-        # Prepare the input message
+        # Prepare the input message with all available fields
         user_message = f"""Verify this identity:
 Name: {data.get('name', 'Unknown')}
 ID Number: {data.get('id_number', 'Unknown')}
 DOB: {data.get('date_of_birth', 'Unknown')}
+Address: {data.get('address', 'Unknown')}
+
+IMPORTANT: When calling search_government_db, use ALL four parameters (name, id_number, dob, address) to check for field mismatches.
 
 Use ALL three tools to complete verification."""
         
@@ -235,10 +322,12 @@ Use ALL three tools to complete verification."""
                 
                 # Process government DB results
                 if tool_name == 'search_government_db' and tool_result.get('found'):
+                    has_discrepancies = bool(tool_result.get('discrepancies', []))
                     matches_dict['government_db'] = {
-                        'status': 'match' if tool_result.get('match_confidence', 0) == 1.0 else 'mismatch',
+                        'status': 'mismatch' if has_discrepancies else 'match',
                         'confidence': tool_result.get('match_confidence', 0.0),
                         'record': tool_result.get('record', {}),
+                        'discrepancies': tool_result.get('discrepancies', []),
                         'note': tool_result.get('note', '')
                     }
                 
@@ -278,8 +367,12 @@ Use ALL three tools to complete verification."""
         
         # Build discrepancies list
         discrepancies = []
+        
+        # Add field-level discrepancies from government DB
         if matches_dict['government_db']['status'] == 'mismatch':
-            discrepancies.append(matches_dict['government_db'].get('note', 'Name mismatch'))
+            gov_db_discrepancies = matches_dict['government_db'].get('discrepancies', [])
+            discrepancies.extend(gov_db_discrepancies)
+        
         if not gov_db_match and not has_sanctions and not has_pep:
             discrepancies.append('Identity not found in government database')
 

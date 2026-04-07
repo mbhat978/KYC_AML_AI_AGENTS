@@ -10,7 +10,9 @@
       "date_of_birth": "1955-07-20",
       "status": "Former PEP",
       "risk_level": "MEDIUM",
-      "last_position_held": "2018-12-31"
+      "last_position_held": "2018-12-31",
+      "description": "Served as UK Minister of Finance (2015-2018). Responsible for national budget, taxation policy, and economic strategy. Retired from politics but maintains advisory roles.",
+      "political_connection": "Former senior government official with control over national financial policy and budget allocation"
     },
     {
       "name": "Elena Rodriguez",
@@ -19,7 +21,9 @@
       "date_of_birth": "1968-03-14",
       "status": "Active PEP",
       "risk_level": "HIGH",
-      "current_position": true
+      "current_position": true,
+      "description": "Currently serving Mexican Senator (2018-present). Member of Finance and Budget Committee. Influential in legislative decisions affecting banking and financial sector.",
+      "political_connection": "Active legislator with significant influence over financial regulations and banking oversight"
     },
     {
       "name": "Dr. Rajesh Mehta",
@@ -28,7 +32,9 @@
       "date_of_birth": "1962-11-05",
       "status": "Active PEP",
       "risk_level": "MEDIUM",
-      "current_position": true
+      "current_position": true,
+      "description": "Director of India's largest state-owned bank since 2020. Government appointee with control over lending policies and financial operations. Former Deputy Governor of Reserve Bank of India.",
+      "political_connection": "Senior executive in state-controlled financial institution with government appointment"
     },
     {
       "name": "Liu Wei",
@@ -37,7 +43,9 @@
       "date_of_birth": "1960-05-18",
       "status": "Active PEP",
       "risk_level": "HIGH",
-      "current_position": true
+      "current_position": true,
+      "description": "Provincial Governor of major economic zone in China since 2019. Member of Communist Party Central Committee. Controls regional economic policy, infrastructure projects, and foreign investment approvals.",
+      "political_connection": "High-ranking regional political leader with significant control over economic development and party affairs"
     }
   ]
 }

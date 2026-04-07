@@ -103,9 +103,11 @@ class KYCServiceWithStreaming:
                         matches = ver_result.get('matches', {})
                         if matches.get('sanctions', {}).get('status') == 'flagged':
                             sanctions_flagged = True
-                            ver_status = "⚠️ Sanctions list match detected!"
+                            sanction_reason = matches.get('sanctions', {}).get('reason', 'Unknown')
+                            ver_status = f"⚠️ Sanctions list match: {sanction_reason}"
                         elif matches.get('pep', {}).get('status') == 'flagged':
-                            ver_status = "⚠️ PEP match detected!"
+                            pep_position = matches.get('pep', {}).get('position', 'Unknown position')
+                            ver_status = f"⚠️ PEP match: {pep_position}"
                         else:
                             ver_status = "✅ Verification completed"
             
