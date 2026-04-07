@@ -26,13 +26,15 @@
 > - **Expensive to scale** - Requires large compliance teams
 > - **Poor customer experience** - Delayed onboarding
 > 
-> Our solution reduces this to 8-15 seconds with AI-powered automation while maintaining 95%+ accuracy."
+> My solution reduces this to 15-20 seconds with AI-powered automation while maintaining 90%+ accuracy."
+> it uses multiple AI agents to process KYC documents and analyze transactions for anti-money laundering compliance. The system features real-time processing with live SSE agent feedback, risk assessment, and automated decision-making with human-in-the-loop capabilities.
+
 
 #### Step 3: System Overview
 **What to say:**
 > "This system uses **6 specialized AI agents** working together:
 > 
-> 1. **Extraction Agent** - Uses OCR and AI to read documents (Aadhaar, PAN, Passport)
+> 1. **Extraction Agent** - Uses OCR and AI to read documents (PAN, Passport)
 > 2. **Verification Agent** - Validates against government databases, PEP lists, sanctions
 > 3. **Transaction Agent** - Analyzes financial patterns for AML compliance (if applicable)
 > 4. **Reasoning Agent** - Provides intelligent risk analysis with explanations
